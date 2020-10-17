@@ -1,0 +1,225 @@
+<%- include("./partials/header") %>
+
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-2">Market</h1>
+        <h5 class="text-muted"> - <%= currentUser.chainName %> -</h5>
+        <hr>
+
+        <table class="table table-striped branches-table">
+            <thead>
+                <tr>
+                    <%if(currentUser.dark){%>
+                        <th scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByCity">City</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByBeds">Beds</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByStars">Stars</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByOccupancy">Occupancy</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByRenovation">Next Renovation</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByPrice">Price</Button></th>
+                    <%}else{%>
+                        <th scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByCity">City</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByBeds">Beds</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByStars">Stars</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByOccupancy">Occupancy</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByRenovation">Next Renovation</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByPrice">Price</Button></th>
+                    <%}%>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">    
+            </tbody>
+        </table>
+    </div>
+    <div class="modal fade" id="sellModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="sellModalTitle">Modal title</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <form action="" id="sellForm" method="post">
+                <div class="modal-body" id="modalText">
+                    
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-outline-danger" id="buyButton"></button>
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    <small>Your branches are in purple and can not be bought.</small>
+
+</div>
+
+<script>
+    var marketNav = document.getElementById("branchesNav");
+    marketNav.classList.add("active");    
+
+    var cityButton = document.getElementById("sortByCity");
+    var bedsButton = document.getElementById("sortByBeds");
+    var starsButton = document.getElementById("sortByStars");
+    var occupancyButton = document.getElementById("sortByOccupancy");
+    var renovationButton = document.getElementById("sortByRenovation");
+    var profitButton = document.getElementById("sortByProfit");
+    var priceButton = document.getElementById("sortByPrice");
+    var profitBedButton = document.getElementById("sortByProfitPerBed");
+
+    var modalText = document.getElementById("modalText");
+    var sellModalTitle = document.getElementById("sellModalTitle");
+
+    var buyButton = document.getElementById('buyButton');
+
+    var tbody = document.getElementById('tableBody');
+
+    var branches = <%-branches%>;
+    var locations = <%-locations%>;
+    var user = <%-user%>;
+
+    branches.forEach(branch => {
+        branch.beds = parseInt(branch.beds);
+    });
+
+    var up = false;
+
+    PlotBranches('city');
+
+    cityButton.addEventListener("click", function(){
+        PlotBranches('city');
+    });
+
+    bedsButton.addEventListener("click", function(){
+        PlotBranches('beds');
+    });
+
+    starsButton.addEventListener("click", function(){
+        PlotBranches('stars');
+    });
+
+    occupancyButton.addEventListener("click", function(){
+        PlotBranches("capacity");
+    });
+
+    priceButton.addEventListener("click", function(){
+        PlotBranches("salePrice");
+    });
+
+    function PlotBranches(sortby){
+        tbody.innerHTML = '';
+        up = !up;
+        branches.sort(function(a,b){
+            if(up){
+                if(a[sortby] > b[sortby]) return 1;
+                if(a[sortby] < b[sortby]) return -1;
+                return 0;
+            }else{
+                if(a[sortby] > b[sortby]) return -1;
+                if(a[sortby] < b[sortby]) return 1;
+                return 0;
+            }
+
+        });
+
+        branches.forEach(branch => {
+            if(!branch.capacity){
+                branch.capacity = [];
+            }
+            var tr = document.createElement('tr');
+            var th = document.createElement('th');
+
+            th.innerText = branch['city'];
+
+            th.scope = 'row';
+            tr.appendChild(th);
+
+            var tdBeds = document.createElement('td');
+            tdBeds.innerText = branch['beds'];
+            tr.appendChild(tdBeds);
+            var tdStars = document.createElement('td');
+            tdStars.innerText = branch['stars'];
+            tr.appendChild(tdStars);
+
+            var tdCapacity = document.createElement('td');
+            var location = locations.find(x => x.city == branch['city']);
+            var beds = location.beds;
+            var visitors = location.visitors;
+            var capacity;
+            var capacityText;
+            if(beds == undefined){
+                capacityText = '-';
+            }else{
+                capacity = parseFloat(visitors) / parseFloat(beds);
+                branch.capacity.push(capacity);
+                if(capacity > 1){
+                    capacityText = '100%';
+                    tdCapacity.classList.add('text-success');
+                }else if(capacity > 0.5){
+                    capacityText = (capacity * 100).toFixed(1) + '%';
+                    tdCapacity.classList.add('text-warning');
+                }else{
+                    capacityText = (capacity * 100).toFixed(1) + '%';
+                    tdCapacity.classList.add('text-danger');
+                }
+            }
+
+            tdCapacity.innerText = capacityText;
+            tr.appendChild(tdCapacity);
+
+            var tdRenovation = document.createElement('td');
+            tdRenovation.innerText = branch.renovation;
+            if(branch.renovation < 0){
+                tdRenovation.classList.add('text-danger');
+            }
+            tdRenovation.classList.add('text-center');
+            tr.appendChild(tdRenovation);    
+
+            var tdPrice = document.createElement('td');
+            tdPrice.innerText = formatter.format(branch.salePrice);
+            tr.appendChild(tdPrice);
+
+
+            if(user.branches.includes(branch._id)){
+                tr.classList.add('highlight');
+                var emptyTd = document.createElement('td');
+                tr.appendChild(emptyTd);
+            }else{
+                var tdButton = document.createElement('td');
+                var button = document.createElement('button');
+                if(user.dark){
+                    button.classList.add('btn', 'btn-outline-light');
+                }else{
+                    button.classList.add('btn', 'btn-outline-dark');
+                }
+                button.innerText = 'Buy';
+                button.setAttribute('data-target', '#sellModal');
+                button.setAttribute('data-toggle', 'modal');
+                button.addEventListener('click', function(){
+                    if(branch.salePrice > user.cash){
+                        button.setAttribute('disabled', '');
+                    }
+                    sellModalTitle.innerText = "Buy " + branch.city;
+                    sellForm.action = "/buy/" + branch._id;
+                    buyButton.innerText = "Buy for " + formatter.format(branch.salePrice);
+                    var starsText = "";
+                    for (let j = 0; j < branch.stars; j++) {
+                        starsText += '\u2606';
+                    }
+                    modalText.innerText = `Buy branch in ${branch.city} with ${starsText} and ${branch.beds} beds.`;
+                });
+                tdButton.appendChild(button);
+                tr.appendChild(tdButton);    
+            }
+
+            tbody.appendChild(tr);
+
+
+            //TODO Maybe offer button
+        });
+    }
+</script>
+
+<%- include("./partials/footer") %>

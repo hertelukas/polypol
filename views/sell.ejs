@@ -1,0 +1,316 @@
+<%- include("./partials/header") %>
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-2">Sell</h1>
+        <h5 class="text-muted"> - <%= currentUser.chainName %> -</h5>
+
+        <hr>
+        <h3>Sell Branches</h3>
+        <i data-toggle='popover' data-trigger='hover focus' data-content="Press on a branch to sell it. You won't be able to make any changes to it." class="text-center material-icons" id="info">info</i>
+
+        <table class="table table-striped branches-table">
+            <thead>
+                <tr>
+                    <%if(currentUser.dark){%>
+                        <th scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByCity">City</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByBeds">Beds</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByStars">Stars</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByOccupancy">Occupancy</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByRenovation">Next Renovation</Button></th>
+                        <th class="cashTable" scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByProfitPerBed">Profit per Bed</Button></th>
+                        <th class="cashTable" scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByProfit">Profit</Button></th>
+                    <%}else{%>
+                        <th scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByCity">City</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByBeds">Beds</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByStars">Stars</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByOccupancy">Occupancy</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByRenovation">Next Renovation</Button></th>
+                        <th class="cashTable" scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByProfitPerBed">Profit per Bed</Button></th>
+                        <th class="cashTable" scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByProfit">Profit</Button></th>
+                    <%}%>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">    
+            </tbody>
+        </table>
+
+        <h3>Branches on sale</h3>
+        <table class="table table-striped branches-table">
+            <thead>
+                <tr>
+                    <th scope="col">City</th>
+                    <th scope="col">Beds</th>
+                    <th scope="col">Stars</th>
+                    <th scope="col" class="cashTable">Listed for</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody id="saleTable">    
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="modal fade" id="sellModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="sellModalTitle">Modal title</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <form action="" id="sellForm" method="post">
+                <div class="modal-body">
+                        <div class="form-group d-flex justify-content-between align-items-center">
+                            <label for="price">Sell for ($) </label>
+                            <input type="number" name="price" value="1000000" id="price" min="0" required max="999999999">
+                            <span ><b id="priceConverted"></b></span>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-outline-danger">Put branch on the market</button>
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+</div>
+
+<script>
+    var marketNav = document.getElementById("branchesNav");
+    marketNav.classList.add("active");
+
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    });
+
+    var cityButton = document.getElementById("sortByCity");
+    var bedsButton = document.getElementById("sortByBeds");
+    var starsButton = document.getElementById("sortByStars");
+    var occupancyButton = document.getElementById("sortByOccupancy");
+    var renovationButton = document.getElementById("sortByRenovation");
+    var profitButton = document.getElementById("sortByProfit");
+    var profitBedButton = document.getElementById("sortByProfitPerBed");
+    var sellForm = document.getElementById("sellForm");
+
+    var tbody = document.getElementById('tableBody');
+
+    var user = <%-user%>;
+    var locations = <%-locations%>;
+    var branches = user['branches'];
+
+    var branchesOnSale = [];
+
+    branches.forEach(branch => {
+        if(branch.onSale){
+            const index = branches.indexOf(branch);
+            branchesOnSale.push(branch);
+            if(index > -1) branches.splice(index, 1);
+        }
+        branch.beds = parseInt(branch.beds);
+        branch.profit = parseFloat(branch.profit[branch.profit.length - 1]);
+        if(Number.isNaN(branch.profit)) branch.profit = 0;
+        branch.profitPerBed = parseFloat(branch.profit / branch.beds);
+    });
+
+    var up = false;
+
+    PlotBranches('city');
+
+    cityButton.addEventListener("click", function(){
+        PlotBranches('city');
+    });
+
+    bedsButton.addEventListener("click", function(){
+        PlotBranches('beds');
+    });
+
+    starsButton.addEventListener("click", function(){
+        PlotBranches('stars');
+    });
+
+    occupancyButton.addEventListener("click", function(){
+        PlotBranches("capacity");
+    });
+
+    profitButton.addEventListener("click", function(){
+        PlotBranches("profit");
+    });
+
+    profitBedButton.addEventListener("click", function(){
+        PlotBranches("profitPerBed");
+    });
+
+    renovationButton.addEventListener("click", function(){
+        PlotBranches("renovation");
+    });
+
+
+    function PlotBranches(sortby){
+        tbody.innerHTML = '';
+        up = !up;
+        branches.sort(function(a,b){
+            if(up){
+                if(a[sortby] > b[sortby]) return 1;
+                if(a[sortby] < b[sortby]) return -1;
+                return 0;
+            }else{
+                if(a[sortby] > b[sortby]) return -1;
+                if(a[sortby] < b[sortby]) return 1;
+                return 0;
+            }
+
+        });
+
+        branches.forEach(branch => {
+            if(!branch.capacity){
+                branch.capacity = [];
+            }
+            var tr = document.createElement('tr');
+            var th = document.createElement('th');
+
+            th.innerText = branch['city'];
+
+            th.scope = 'row';
+            tr.appendChild(th);
+
+            var tdBeds = document.createElement('td');
+            tdBeds.innerText = branch['beds'];
+            tr.appendChild(tdBeds);
+            var tdStars = document.createElement('td');
+            tdStars.innerText = branch['stars'];
+            tr.appendChild(tdStars);
+
+            var tdCapacity = document.createElement('td');
+            var location = locations.find(x => x.city == branch['city']);
+            var beds = location.beds;
+            var visitors = location.visitors;
+            var capacity;
+            var capacityText;
+            if(beds == undefined){
+                capacityText = '-';
+            }else{
+                capacity = parseFloat(visitors) / parseFloat(beds);
+                branch.capacity.push(capacity);
+                if(capacity > 1){
+                    capacityText = '100%';
+                    tdCapacity.classList.add('text-success');
+                }else if(capacity > 0.5){
+                    capacityText = (capacity * 100).toFixed(1) + '%';
+                    tdCapacity.classList.add('text-warning');
+                }else{
+                    capacityText = (capacity * 100).toFixed(1) + '%';
+                    tdCapacity.classList.add('text-danger');
+                }
+            }
+
+            tdCapacity.innerText = capacityText;
+            tr.appendChild(tdCapacity);
+
+            var tdRenovation = document.createElement('td');
+            tdRenovation.innerText = branch.renovation;
+            if(branch.renovation < 0){
+                tdRenovation.classList.add('text-danger');
+            }
+            tdRenovation.classList.add('text-center');
+            tr.appendChild(tdRenovation);
+
+            var tdPerBed = document.createElement('td');
+            tdPerBed.innerText = formatter.format(branch.profitPerBed);
+            tdPerBed.classList.add('cashTable');
+            if(branch.profitPerBed < 0){
+                tdPerBed.classList.add('text-danger');
+            }
+            tr.appendChild(tdPerBed);
+
+
+            var tdProfit = document.createElement('td');
+            tdProfit.innerText = formatter.format(branch.profit);
+            tdProfit.classList.add('cashTable');
+            if(branch.profit < 0 ){
+                tdProfit.classList.add('text-danger');
+            }
+            tr.appendChild(tdProfit);        
+
+            tbody.appendChild(tr);
+
+            var tdButton = document.createElement('td');
+            var button = document.createElement('button');
+            if(user.dark){
+                button.classList.add('btn', 'btn-outline-light');
+            }else{
+                button.classList.add('btn', 'btn-outline-dark');
+            }
+            button.innerText = 'Sell';
+            button.setAttribute('data-target', '#sellModal');
+            button.setAttribute('data-toggle', 'modal');
+            button.addEventListener('click', function(){
+                var sellModalTitle = document.getElementById("sellModalTitle");
+                sellModalTitle.innerText = "Sell " + branch.city;
+                sellForm.action = "/sell/" + branch._id;
+            });
+            tdButton.appendChild(button);
+            tr.appendChild(tdButton);
+        });
+    }
+
+    var saleTable = document.getElementById("saleTable");
+
+    branchesOnSale.forEach(branch => {
+        var tr = document.createElement('tr');
+
+        var tdCity = document.createElement('td');
+        tdCity.innerText = branch.city;
+        tr.appendChild(tdCity);
+
+        var tdBeds = document.createElement('td');
+        tdBeds.innerText = branch.beds;
+        tr.appendChild(tdBeds);
+
+        var tdStars = document.createElement('td');
+        tdStars.innerText = branch.stars;
+        tr.appendChild(tdStars);
+
+        var tdPrice = document.createElement('td');
+        tdPrice.innerText = formatter.format(branch.salePrice);
+        tdPrice.classList.add('cashTable');
+        tr.appendChild(tdPrice);
+
+        var tdButton = document.createElement('td');
+        var form = document.createElement('form');
+        form.action = '/takeDown';
+        form.method = 'POST';
+        var input = document.createElement('input');
+        input.name = 'id';
+        input.value = branch._id;
+        input.hidden = true;
+        form.appendChild(input);
+        var button = document.createElement('button');
+        if(user.dark){
+                button.classList.add('btn', 'btn-outline-light');
+            }else{
+                button.classList.add('btn', 'btn-outline-dark');
+            }
+        button.innerText = "Remove from market";
+        button.type = 'submit';
+        form.appendChild(button);
+        tdButton.appendChild(form);
+        tr.appendChild(tdButton);
+
+        saleTable.appendChild(tr);
+    });
+
+    var priceInput = document.getElementById('price');
+    var priceOutput = document.getElementById('priceConverted');
+    priceOutput.innerText = formatter.format(priceInput.value);
+
+    priceInput.addEventListener('change', function(){
+        priceOutput.innerText = formatter.format(priceInput.value);
+    });
+</script>
+
+<%- include("./partials/footer") %>

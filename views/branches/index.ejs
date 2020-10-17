@@ -1,0 +1,246 @@
+<%- include("../partials/header") %>
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-2">Manage my branch</h1>
+        <h5 class="text-muted" id="cityTitle"></h5>
+        <h5 id="starsTitle" class="text-muted"></h5>
+        <hr>
+        <p class="d-xxl-none text-muted" id="cash"></p>
+
+        <h5 class="text-muted" id="tax">Current tax: </h5>
+
+        <div class="row overview-container">
+            <div class="col-lg-6">
+                <canvas id="profitChart"></canvas>
+            </div>
+            <div class="col-lg-6">
+                <canvas id="expensesChart"></canvas>
+            </div>
+        </div>
+        <br>        
+
+        <form action="" method="post" id="form">
+            <div class="form-group">
+                <label for="usernameInput" class="settings-text"><i data-toggle='popover' data-trigger='hover focus' data-content="Here you can change the amount of
+                    stars your branch has. You will always loose money with every change." class="material-icons" id="info">info</i>  Stars </label>
+                <input class="form-control settings-input" type="number" name="stars" id="starsInput" required max='6' min="0">
+            </div>
+            <div class="form-group">
+                <label for="chainNameInput" class="settings-text">Beds</label>
+                <input class="form-control settings-input" type="number" name="beds" id="bedsInput" required max="7000" min="5">
+            </div>
+            <div class="form-group">
+                <label for="priceFactorInput" class="settings-text"><i data-toggle='popover' data-trigger='hover focus' data-content="Here you can change the price visitors
+                    have to pay. If you set your price too high, users might not visit you anymore. 1 is the default price. You can set this between 0.5 and 1.5 times the original price." class="material-icons" id="info">info</i> Price Factor</label>
+                <input type="number" class="form-control settings-input" name="priceFactor" id="priceFactorInput" required value="" max="1.5" min="0.5" step="0.1">
+            </div>
+            <%if(currentUser.dark){%>
+            <button type="submit" id="updateButton" class="btn btn-outline-light">Update for $5,000.00</button>
+            <%}else{%>
+                <button type="submit" id="updateButton" class="btn btn-outline-dark">Update for $5,000.00</button>
+            <%}%>
+        </form>
+        <br>
+        <h5 class="text-muted" id="renovationTime"></h5>
+        <form action="" id="renovateForm" method="post">
+            <%if(currentUser.dark){%>
+            <button type="submit" class="btn btn-outline-light"><i data-toggle='popover' data-trigger='hover focus' data-content="Renovate your hotel regularly. If the renovation time falls below 0,
+                you have to expect heavy losses in turnover. Renovating sets the renovation time back to 240 months." class="material-icons" id="info">info</i> <span id="renovateButton"></span> </button>
+            <%}else{%>
+                <button type="submit" class="btn btn-outline-dark"><i data-toggle='popover' data-trigger='hover focus' data-content="Renovate your hotel regularly. If the renovation time falls below 0,
+                    you have to expect heavy losses in turnover. Renovating sets the renovation time back to 240 months." class="material-icons" id="info">info</i> <span id="renovateButton"></span> </button>
+            <%}%>
+        </form>
+        <br>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    });
+    var cityTitle = document.getElementById('cityTitle');
+    var starsTitle = document.getElementById('starsTitle');
+    var form = document.getElementById('form');
+    var renovateForm = document.getElementById('renovateForm');
+    var renovationTime = document.getElementById('renovationTime');
+    var cash = document.getElementById('cash');
+    var tax = document.getElementById('tax');
+
+    var branch = <%- branch %>;
+
+    var value = <%- value %>;
+    var userCash = <%- userCash %>;
+    var dark = <%- dark %>;
+    var locationid = '<%- locationid %>';
+
+    form.action = "/branches/" + branch._id;
+    renovateForm.action = "/branches/" + branch._id + "/renovate";
+
+    if(branch.taxes.length) tax.innerText = "Current tax: " + formatter.format(branch.taxes[branch.taxes.length - 1]);
+    else tax.setAttribute('hidden', '');
+
+    cash.innerText = formatter.format(userCash);
+
+    var city = branch.city;
+    var stars = parseFloat(branch.stars);
+    var starsText = '';
+    renovationTime.innerText = "Renovate in " + branch.renovation + " months at the latest to prevent heavy sales losses.";
+
+    cityLink = document.createElement('a');
+    cityLink.href = '/locations/' + locationid;
+    cityLink.innerText = '- ' + city + ' -';
+    cityLink.classList.add('text-muted');
+    cityTitle.appendChild(cityLink);
+
+    for (let i = 0; i < stars; i++) {
+        starsText += '&#9734';
+    }
+
+    starsTitle.innerHTML = starsText;
+
+    var starsInput = document.getElementById('starsInput');
+    var bedsInput = document.getElementById('bedsInput');
+    var updateButton = document.getElementById('updateButton');
+    var priceInput = document.getElementById("priceFactorInput");
+
+    if(branch.priceFactor){
+        priceInput.value = branch.priceFactor;
+    }else{
+        priceInput.value = 1;
+    }
+
+    starsInput.value = branch.stars;
+    bedsInput.value = branch.beds;
+    var price;
+
+    starsInput.addEventListener("change", function(){
+        UpdatePrice();
+    });
+    bedsInput.addEventListener("change", function(){
+        UpdatePrice();
+    });
+
+    function UpdatePrice(){
+        var difference = calcBranchPrice(value, starsInput.value, bedsInput.value) - calcBranchPrice(value,  branch.stars, branch.beds);
+        if(difference < 0 && starsInput.value <= branch.stars){
+            difference = difference /2;
+        }else if(difference < 0){
+            difference = 0;
+        }
+        price = difference * 1.1 + 5000;
+        updateButton.innerText = "Buy for " + formatter.format(price);
+        if(price > userCash){
+            updateButton.setAttribute('disabled', '');
+        }else{
+            updateButton.removeAttribute('disabled');
+        }
+    }
+
+    var renovateButton = document.getElementById("renovateButton");
+    stars = branch.stars;
+    if(stars === 0) stars = 1;
+    var renovationPrice = value * stars * Math.sqrt(240 - branch.renovation) * branch.beds / 150;
+    renovateButton.innerText += "Renovate for " + formatter.format(renovationPrice);
+    if(renovationPrice > userCash || branch.renovation === 240){
+        renovateButton.parentElement.setAttribute('disabled','');
+    }
+
+    Chart.defaults.global.defaultFontFamily = "'Raleway', 'sans-serif'";
+    Chart.defaults.global.defaultFontSize = 14;
+    Chart.defaults.global.title.fontSize = 18;
+    if(dark){
+        Chart.defaults.global.defaultFontColor = '#FCFCFC';
+    }
+
+
+    var branchGraph = document.getElementById('profitChart');
+    var expensesChart = document.getElementById('expensesChart');
+    data = branch.profit.splice(branch.profit.length - 12, 12);
+    staff = branch.staff.splice(branch.staff.length - 12, 12);
+    interior = branch.interior.splice(branch.interior.length - 12, 12);
+    labels = branch.lables.splice(branch.lables.length - 12, 12);
+    labelsCut = [];
+    expenses = [];
+
+    for (let i = 0; i < staff.length; i++) {
+        expenses.push(((staff[i] + interior[i])/1000).toFixed(2));
+    }
+
+    labels.forEach(label => {
+        if(!label.includes("January")){
+            label = label.substring(0, label.length-5);
+        }
+        labelsCut.push(label);
+    });
+
+    for (let i = 0; i < data.length; i++) {
+        data[i] = (data[i] / 1000).toFixed(2);
+    }
+
+    var backgroundColor = '#3a243bdd';
+    if(dark){
+        backgroundColor = '#3a243b66';
+    }
+
+    var myChart = new Chart(branchGraph, {
+        type: 'line',
+        data: {
+            labels: labelsCut,
+            datasets: [{
+                label: "Profit ($1,000)",
+                data: data,
+                borderColor: "#FFF",
+                borderWidth: 1,
+                pointRadius: 5,
+                pointHitRadius: 15,
+                hoverBorderWidth: 3,
+                lineTension: 0.4,
+                backgroundColor: backgroundColor
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Profit ($1,000)',
+            },
+            legend:{
+                display: false
+            }
+        }
+    });
+
+    var expensesChart = new Chart(expensesChart, {
+        type: 'line',
+        data: {
+            labels: labelsCut,
+            datasets: [{
+                label: "Expenses ($1,000)",
+                data: expenses,
+                borderColor: "#FFF",
+                borderWidth: 1,
+                pointRadius: 5,
+                pointHitRadius: 15,
+                hoverBorderWidth: 3,
+                lineTension: 0.4,
+                backgroundColor: backgroundColor
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Expenses ($1,000)',
+            },
+            legend:{
+                display: false
+            }
+        }
+    });
+
+
+    function calcBranchPrice(basePrice, stars, beds){
+        return parseInt(parseFloat(basePrice) + parseFloat(basePrice * stars ** 4) + parseFloat(beds * 0.01 * basePrice) * 1000);
+    }
+</script>
+
+<%- include("../partials/footer") %>

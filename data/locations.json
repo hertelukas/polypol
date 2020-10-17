@@ -1,0 +1,632 @@
+[
+    {
+        "country": "Thailand",
+        "city": "Bangkok",
+        "value": 920,
+        "visitors": 21470,
+        "beds": 0,
+        "latitude": 13.756,
+        "longitude": 100.501,
+        "region": "Asia"
+    },
+    {
+        "country": "United Kingdom",
+        "city": "London",
+        "value": 3240,
+        "visitors": 19880,
+        "beds": 0,
+        "latitude": 51.507,
+        "longitude": -0.127,
+        "region": "Europe"
+    },
+    {
+        "country": "France", 
+        "city": "Paris",
+        "value": 1610,
+        "visitors": 18030,
+        "beds": 0,
+        "latitude": 48.856613,
+        "longitude": 2.352222,
+        "region": "Europe"
+    },
+    {
+        "country": "United Arab Emirates", 
+        "city": "Dubai",
+        "value": 1510,
+        "visitors": 15270,
+        "beds": 0,
+        "latitude": 25.204,
+        "longitude": 55.270,
+        "region": "Europe"
+    },
+    {
+        "country": "United States", 
+        "city": "New York City",
+        "value": 3500,
+        "visitors": 12750,
+        "beds": 0,
+        "latitude": 40.712,
+        "longitude": -74.060,
+        "region": "America"
+    },
+    {
+        "country": "Singapore", 
+        "city": "Singapore",
+        "value": 1860,
+        "visitors": 12110,
+        "beds": 0,
+        "latitude": 1.314,
+        "longitude": 103.704,
+        "region": "Asia"
+    },
+    {
+        "country": "Malaysia", 
+        "city": "Kuala Lumpur",
+        "value": 570,
+        "visitors": 12020,
+        "beds": 0,
+        "latitude": 3.138,
+        "longitude": 101.616,
+        "region": "Asia"
+    },
+    {
+        "country": "Turkey", 
+        "city": "Istanbul",
+        "value": 350,
+        "visitors": 11950,
+        "beds": 0,
+        "latitude": 41.005,
+        "longitude": 28.872,
+        "region": "Europe"
+    },
+    {
+        "country": "Japan", 
+        "city": "Tokyo",
+        "value": 1300,
+        "visitors": 10700,
+        "beds": 0,
+        "latitude": 35.509,
+        "longitude": 139.209,
+        "region": "Asia"
+    },
+    {
+        "country": "South Korea", 
+        "city": "Seoul",
+        "value": 1000,
+        "visitors": 10200,
+        "beds": 0,
+        "latitude": 37.565,
+        "longitude": 126.849,
+        "region": "Asia"
+    },
+    {
+        "country": "Hong Kong", 
+        "city": "Hong Kong",
+        "value": 2690,
+        "visitors": 8370,
+        "beds": 0,
+        "latitude": 22.352,
+        "longitude": 113.987,
+        "region": "Asia"
+    },
+    {
+        "country": "Spain", 
+        "city": "Barcelona",
+        "value": 1120,
+        "visitors": 8200,
+        "beds": 0,
+        "latitude": 41.394,
+        "longitude": 2.078,
+        "region": "Europe"
+    },
+    {
+        "country": "Netherlands", 
+        "city": "Amsterdam",
+        "value": 1860,
+        "visitors": 8000,
+        "beds": 0,
+        "latitude": 52.354,
+        "longitude": 4.833,
+        "region": "Europe"
+    },
+    {
+        "country": "Italy", 
+        "city": "Milan",
+        "value": 1320,
+        "visitors": 7650,
+        "beds": 0,
+        "latitude": 45.462,
+        "longitude": 9.107,
+        "region": "Europe"
+    },
+    {
+        "country": "Taiwan", 
+        "city": "Taipei",
+        "value": 1170,
+        "visitors": 7350,
+        "beds": 0,
+        "latitude": 25.017,
+        "longitude": 121.366,
+        "region": "Asia"
+    },
+    {
+        "country": "Italy", 
+        "city": "Rome",
+        "value": 1270,
+        "visitors": 7120,
+        "beds": 0,
+        "latitude": 41.910,
+        "longitude": 12.395,
+        "region": "Europe"
+    },
+    {
+        "country": "Japan", 
+        "city": "Osaka",
+        "value": 790,
+        "visitors": 7020,
+        "beds": 0,
+        "latitude": 34.677,
+        "longitude": 135.416,
+        "region": "Asia"
+    },
+    {
+        "country": "Austria", 
+        "city": "Vienna",
+        "value": 1160,
+        "visitors": 6690,
+        "beds": 0,
+        "latitude": 48.220,
+        "longitude": 16.239,
+        "region": "Europe"
+    },
+    {
+        "country": "China", 
+        "city": "Shanghai",
+        "value": 1130,
+        "visitors": 6120,
+        "beds": 0,
+        "latitude": 31.224,
+        "longitude": 121.196,
+        "region": "Asia"
+    },
+    {
+        "country": "Czech Republic", 
+        "city": "Prague",
+        "value": 860,
+        "visitors": 5810,
+        "beds": 0,
+        "latitude": 50.059,
+        "longitude": 14.325,
+        "region": "Europe"
+    },
+    {
+        "country": "United States", 
+        "city": "Los Angeles",
+        "value": 2420,
+        "visitors": 5600,
+        "beds": 0,
+        "latitude": 34.020,
+        "longitude": -118.691,
+        "region": "America"
+    },
+    {
+        "country": "Spain", 
+        "city": "Madrid",
+        "value": 1100,
+        "visitors": 5260,
+        "beds": 0,
+        "latitude": 40.438,
+        "longitude": -3.819,
+        "region": "Europe"
+    },
+    {
+        "country": "Germany", 
+        "city": "Munich",
+        "value": 1500,
+        "visitors": 5250,
+        "beds": 0,
+        "latitude": 48.155,
+        "longitude": 11.471,
+        "region": "Europe"
+    },
+    {
+        "country": "United States", 
+        "city": "Miami",
+        "value": 1950,
+        "visitors": 5240,
+        "beds": 0,
+        "latitude": 25.782,
+        "longitude": -80.299,
+        "region": "America"
+    },
+    {
+        "country": "Ireland", 
+        "city": "Dublin",
+        "value": 2050,
+        "visitors": 4970,
+        "beds": 0,
+        "latitude": 53.324,
+        "longitude": -6.385,
+        "region": "Europe"
+    },
+    {
+        "country": "Germany",
+        "city": "Berlin",
+        "value": 1110,
+        "visitors": 4940,
+        "beds": 0,
+        "latitude": 52.506,
+        "longitude": 13.284,
+        "region": "Europe"
+    },
+    {
+        "country": "India",
+        "city": "Mumbai",
+        "value": 700,
+        "visitors": 4860,
+        "beds": 0,
+        "latitude": 19.082,
+        "longitude": 72.741,
+        "region": "Asia"
+    },
+    {
+        "country": "Saudi Arabia",
+        "city": "Riyadh",
+        "value": 460,
+        "visitors": 4590,
+        "beds": 0,
+        "latitude": 24.725,
+        "longitude": 46.542,
+        "region": "Asia"
+    },
+    {
+        "country": "Canada",
+        "city": "Toronto",
+        "value": 1680,
+        "visitors": 4520,
+        "beds": 0,
+        "latitude": 43.718,
+        "longitude": -79.518,
+        "region": "America"
+    },
+    {
+        "country": "India",
+        "city": "Chennai",
+        "value": 240,
+        "visitors": 4370,
+        "beds": 0,
+        "latitude": 13.047,
+        "longitude": 80.068,
+        "region": "Asia"
+    },
+    {
+        "country": "China",
+        "city": "Beijing",
+        "value": 1140,
+        "visitors": 4050,
+        "beds": 0,
+        "latitude": 39.939,
+        "longitude": 116.117,
+        "region": "Asia"
+    },
+    {
+        "country": "Peru",
+        "city": "Lima",
+        "value": 510,
+        "visitors": 4030,
+        "beds": 0,
+        "latitude": -12.026,
+        "longitude": -77.127,
+        "region": "South America"
+    },
+    {
+        "country": "United States",
+        "city": "San Francisco",
+        "value": 3710,
+        "visitors": 3930,
+        "beds": 0,
+        "latitude": 37.757,
+        "longitude": -122.472,
+        "region": "America"
+    },
+    {
+        "country": "Canada",
+        "city": "Vancouver",
+        "value": 1650,
+        "visitors": 3900,
+        "beds": 0,
+        "latitude": 49.257,
+        "longitude": -123.193,
+        "region": "America"
+    },
+    {
+        "country": "Australia",
+        "city": "Sydney",
+        "value": 2040,
+        "visitors": 3750,
+        "beds": 0,
+        "latitude": -33.847,
+        "longitude": 150.651,
+        "region": "Oceania"
+    },
+    {
+        "country": "China",
+        "city": "Guangzhou",
+        "value": 600,
+        "visitors": 3700,
+        "beds": 0,
+        "latitude": 23.125,
+        "longitude": 112.947,
+        "region": "Asia"
+    },
+    {
+        "country": "Portugal",
+        "city": "Lisbon",
+        "value": 1090,
+        "visitors": 3630,
+        "beds": 0,
+        "latitude": 38.743,
+        "longitude": -9.195,
+        "region": "Europe"
+    },
+    {
+        "country": "Germany",
+        "city": "Frankfurt am Main",
+        "value": 1250,
+        "visitors": 3620,
+        "beds": 0,
+        "latitude": 50.121,
+        "longitude": 8.496,
+        "region": "Europe"
+    },
+    {
+        "country": "South Africa",
+        "city": "Johannesburg",
+        "value": 590,
+        "visitors": 3600,
+        "beds": 0,
+        "latitude": -26.171,
+        "longitude": 28.005,
+        "region": "Africa"
+    },
+    {
+        "country": "Hungary",
+        "city": "Budapest",
+        "value": 590,
+        "visitors": 3360,
+        "beds": 0,
+        "latitude": 47.481,
+        "longitude": 18.990,
+        "region": "Europe"
+    },
+    {
+        "country": "United Arab Emirates",
+        "city": "Abu Dhabi",
+        "value": 1800,
+        "visitors": 3140,
+        "beds": 0,
+        "latitude": 24.387,
+        "longitude": 54.418,
+        "region": "Asia"
+    },
+    {
+        "country": "Vietnam",
+        "city": "Ho Chi Minh City",
+        "value": 530,
+        "visitors": 3050,
+        "beds": 0,
+        "latitude": 10.755,
+        "longitude": 106.415,
+        "region": "Asia"
+    },
+    {
+        "country": "Mexico",
+        "city": "Mexico City",
+        "value": 620,
+        "visitors": 2980,
+        "beds": 0,
+        "latitude": 19.320,
+        "longitude": -99.292,
+        "region": "America"
+    },
+    {
+        "country": "Dominican Republic",
+        "city": "Punta Cana",
+        "value": 420,
+        "visitors": 2730,
+        "beds": 0,
+        "latitude": 18.640,
+        "longitude": -68.611,
+        "region": "America"
+    },
+    {
+        "country": "Belgium",
+        "city": "Brussels",
+        "value": 1080,
+        "visitors": 2710,
+        "beds": 0,
+        "latitude": 50.855,
+        "longitude": 4.305,
+        "region": "Europe"
+    },    
+    {
+        "country": "Greece",
+        "city": "Athens",
+        "value": 440,
+        "visitors": 2680,
+        "beds": 0,
+        "latitude": 37.990,
+        "longitude": 23.703,
+        "region": "Europe"
+    },
+    {
+        "country": "Australia",
+        "city": "Melbourne",
+        "value": 1490,
+        "visitors": 2650,
+        "beds": 0,
+        "latitude": -37.971,
+        "longitude": 144.772,
+        "region": "Oceania"
+    },
+    {
+        "country": "India",
+        "city": "Delhi",
+        "value": 290,
+        "visitors": 2580,
+        "beds": 0,
+        "latitude": 28.692,
+        "longitude": 76.953,
+        "region": "Asia"
+    },
+    {
+        "country": "Brazil",
+        "city": "São Paulo",
+        "value": 580,
+        "visitors": 2300,
+        "beds": 0,
+        "latitude": -23.681,
+        "longitude": -46.875,
+        "region": "South America"
+    },
+    {
+        "country": "Switzerland",
+        "city": "Zurich",
+        "value": 2090,
+        "visitors": 2240,
+        "beds": 0,
+        "latitude": 47.377,
+        "longitude": 8.466,
+        "region": "Europe"
+    },
+    {
+        "country": "Canada",
+        "city": "Montreal",
+        "value": 850,
+        "visitors": 2240,
+        "beds": 0,
+        "latitude": 45.558,
+        "longitude": -73.870,
+        "region": "America"
+    },
+    {
+        "country": "Vietnam",
+        "city": "Hanoi",
+        "value": 430,
+        "visitors": 2200,
+        "beds": 0,
+        "latitude": 21.022,
+        "longitude": 105.819,
+        "region": "Asia"
+    },
+    {
+        "country": "United States",
+        "city": "Washington D.C.",
+        "value": 2470,
+        "visitors": 2180,
+        "beds": 0,
+        "latitude": 38.893,
+        "longitude": -77.084,
+        "region": "America"
+    },
+    {
+        "country": "China",
+        "city": "Shenzhen",
+        "value": 820,
+        "visitors": 2120,
+        "beds": 0,
+        "latitude": 22.555,
+        "longitude": 113.913,
+        "region": "Asia"
+    },
+    {
+        "country": "Sweden",
+        "city": "Stockholm",
+        "value": 1410,
+        "visitors": 2080,
+        "beds": 0,
+        "latitude": 59.326,
+        "longitude": 17.841,
+        "region": "Europe"
+    },
+    {
+        "country": "United States",
+        "city": "Chicago",
+        "value": 1810,
+        "visitors": 2080,
+        "beds": 0,
+        "latitude": 41.833,
+        "longitude": -87.872,
+        "region": "Europe"
+    },
+    {
+        "country": "Argentinia",
+        "city": "Buenos Aires",
+        "value": 370,
+        "visitors": 2020,
+        "beds": 0,
+        "latitude": -34.615,
+        "longitude": -58.503,
+        "region": "South America"
+    },
+    {
+        "country": "Germany",
+        "city": "Düsseldorf",
+        "value": 1010,
+        "visitors": 1950,
+        "beds": 0,
+        "latitude": 51.238,
+        "longitude": 6.674,
+        "region": "Europe"
+    },
+    {
+        "country": "Russia",
+        "city": "Moscow",
+        "value": 930,
+        "visitors": 1830,
+        "beds": 0,
+        "latitude": 55.581,
+        "longitude": 36.825,
+        "region": "Europe"
+    },
+    {
+        "country": "United States",
+        "city": "Boston",
+        "value": 2540,
+        "visitors": 1740,
+        "beds": 0,
+        "latitude": 42.314,
+        "longitude": -71.040,
+        "region": "America"
+    },
+    {
+        "country": "China",
+        "city": "Chengdu",
+        "value": 410,
+        "visitors": 1740,
+        "beds": 0,
+        "latitude": 30.658,
+        "longitude": 103.935,
+        "region": "Asia"
+    },
+    {
+        "country": "India",
+        "city": "Kolkata",
+        "value": 180,
+        "visitors": 1720,
+        "beds": 0,
+        "latitude": 22.676,
+        "longitude": 88.049,
+        "region": "Asia"
+    },
+    {
+        "country": "United Kingdom",
+        "city": "Edinburgh",
+        "value": 1130,
+        "visitors": 1660,
+        "beds": 0,
+        "latitude": 55.941,
+        "longitude": -3.275,
+        "region": "Europe"
+    }
+]

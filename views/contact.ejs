@@ -1,0 +1,64 @@
+<%- include("./partials/header") %>
+<div class="container contact-container text-center">
+
+        <% if(currentUser){%>
+            <form action="/contact" method="post">
+                <h1 class="display-4">Contact</h1>
+                <hr>
+                <div class="form-group settings-input">
+                    <label for="name" class="settings-text">Name</label>
+                    <input class="form-control" type="text" name="name" id="name" value="<%=currentUser.username%>"  required readonly>
+                </div>
+                <br>
+                <div class="form-group settings-input">
+                    <label for="mail" class="settings-text">Mail</label>
+                    <input class="form-control" type="email" name="mail" id="mail" value="<%=currentUser.mail%>" required readonly>                    
+                </div>
+                <br>
+                <div class="form-group">
+                    <label for="message" class="settings-text">Message</label>
+                    <textarea rows="5" class="form-control" type="text" name="message" id="message" required></textarea>                    
+                </div>
+                <div data-theme="dark" class="g-recaptcha contact-recaptcha" data-sitekey="6LdWiOgUAAAAABCEKH1sP5kTziY0mpb51-YAyQWH" style="transform:scale(0.925);-webkit-transform:scale(0.925);transform-origin:0 0;-webkit-transform-origin:0 0;"></div>
+                <br>
+                <%if(currentUser.dark){%>
+                    <button type="submit" class="btn btn-outline-light">Send</button>
+                    <a href="https://discord.gg/yDNHHue" target="_blank" class="btn btn-outline-light">Discord</a>
+                <%}else{%>
+                    <button type="submit" class="btn btn-outline-dark">Send</button>
+                    <a href="https://discord.gg/yDNHHue" target="_blank" class="btn btn-outline-dark">Discord</a>
+                <%}%>
+            </form>
+        <%}else{%>
+            <form action="/contact" method="post">
+                <h1 class="display-4">Contact</h1>
+                <hr>
+                <div class="form-group settings-input">
+                    <label for="name" class="settings-text">Name</label>
+                    <input class="form-control" type="text" name="name" id="name" placeholder="Name" required>
+                </div>
+                <br>
+                <div class="form-group settings-input">
+                    <label for="mail" class="settings-text">Mail</label>
+                    <input class="form-control" type="email" name="mail" id="mail" placeholder="E-Mail" required>                    
+                </div>
+                <div class="form-group">
+                    <label for="message" class="settings-text">Message</label>
+                    <textarea rows="5" class="form-control" type="text" name="message" id="message" required></textarea>                    
+                </div>
+                <div data-theme="dark" class="g-recaptcha contact-recaptcha" data-sitekey="6LdWiOgUAAAAABCEKH1sP5kTziY0mpb51-YAyQWH" style="transform:scale(0.925);-webkit-transform:scale(0.925);transform-origin:0 0;-webkit-transform-origin:0 0;"></div>
+                <br>
+                <button type="submit" class="btn btn-outline-dark">Send</button>
+                <a href="https://discord.gg/yDNHHue" target="_blank" class="btn btn-outline-dark">Discord</a>
+            </form>
+        <%}%>
+    <small>We will come back to you as fast as possible. Join our discord for faster help!</small>
+    <br>
+
+</div>
+
+<script>
+
+</script>
+
+<%- include("./partials/footer") %>

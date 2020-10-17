@@ -1,0 +1,64 @@
+<%- include("./partials/header") %>
+<script>
+    const temp = <%-currentUserJSON %>;
+    const name = temp.chainName;
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" defer></script>
+<script src="/scripts/chat.js" defer></script>
+
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-2">Chat</h1>
+        <h5 class="text-muted"> - Global chat -</h5>
+        <hr>
+
+        <div id="message-container" class="overflow-auto">
+
+        </div>
+
+        <form action="" method="post" class="form-inline form-chat justify-content-center" id="send-container">
+            <input type="text" name="message" class="form-control" id="message-input" required maxlength="256" placeholder="Type a message...">
+            <%if(currentUser.dark){%>
+                <button type="submit" class="btn btn-outline-light" ><i class="text-center  material-icons" id="send">send</i></button>
+            <%}else{%>
+                <button type="submit" class="btn btn-outline-dark" ><i class="text-center  material-icons" id="send">send</i></button>
+            <%}%>
+        </form>
+    </div>
+</div>
+
+<script>
+    var messages = <%- messages %>;
+    var messageForm = document.getElementById('send-container');
+    var messageContainer = document.getElementById('message-container');
+    messageContainer.scrollTop = messageContainer.scrollHeight;
+    var options = {month: 'short', day: '2-digit', hour: 'numeric', minute: 'numeric'};
+
+    messageForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const message = messageInput.value;
+        appendMessage(message, 'my-message');
+        socket.emit('send-chat-message', message);
+        messageInput.value = '';
+    });
+
+    function appendMessage(message, classname){
+        const messageElement = document.createElement('div');
+        messageElement.classList.add(classname);
+        messageElement.innerHTML = message;
+        messageContainer.append(messageElement);
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
+
+    messages.forEach(message => {
+        message.date = Date.parse(message.time);
+        if(message.sender == name) appendMessage(message.message, 'my-message');
+        else if(message.sender != undefined) appendMessage(`<small><b>${message.sender}</b><br> ${new Intl.DateTimeFormat('en', options).format(message.date)}</small><br> ${message.message} `, 'foreign-message');
+        else appendMessage(`${message.message}`, 'foreign-message');
+    });
+
+</script>
+
+
+
+<%- include("./partials/footer") %>

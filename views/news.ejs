@@ -1,0 +1,40 @@
+<%- include("./partials/header") %>
+
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-2">News</h1>
+        <h5 class="text-muted"> - The hotel news feed -</h5>
+        <hr>
+        <br>
+    </div>
+    <div class="overflow-auto" id="newsContainer">
+        <%news.forEach(function(item){%>
+            <div class="card">
+                <h5 class="card-header d-flex justify-content-between">
+                    <%= item.title %>
+                    <% if(item.change > 0) {%> <span class="text-success"> +<%=item.change.toFixed(2)%>% <%}%></span>
+                    <% if(item.change < 0) {%> <span class="text-danger"> <%=item.change.toFixed(2)%>% <%}%></span>
+                </h5>
+                <div class="card-body">
+                    <p class="card-text"><%= item.text%></p>
+                    <small><%= item.date %></small>
+                </div>
+            </div>
+        <%})%>
+    </div>
+</div>
+
+<script>
+    var newsNav = document.getElementById("newsNav");
+    newsNav.classList.add("active");
+</script>
+
+<%if(!currentUser){%>
+    <div class="footer d-flex justify-content-center">
+      <a href="/contact">Contact</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+    </div>
+  <%}%>
+
+<%- include("./partials/footer") %>

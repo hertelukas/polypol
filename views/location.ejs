@@ -1,0 +1,102 @@
+<%- include("./partials/header") %>
+
+
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-2"><%= location.city%></h1>
+        <h5 class="text-muted"> - <%=location.country%> -</h5>
+        <hr>
+    </div>
+
+    <table class="table table-striped leaderboardTable">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col" class="cashTable">Value</th>
+            </tr>
+        </thead>
+        <tbody id="tbodyLeaderboard">
+            <tr>
+                <th scope="col">Total beds</th>
+                <td scope="col" class="cashTable"><%=location.beds%></td>
+            </tr>
+            <tr>
+                <th scope="col">Total visitors</th>
+                <td scope="col" class="cashTable"><%=location.visitors%></td>
+            </tr>
+            <tr>
+                <th scope="col">Number of branches</th>
+                <td scope="col" class="cashTable"><%=location.branches%></td>
+            </tr>
+            <tr>
+                <th scope="col">Average stars</th>
+                <td scope="col" class="cashTable"><%=location.avg_stars%></td>
+            </tr>
+            <tr>
+                <th scope="col">Average profit per bed</th>
+                <td scope="col" class="cashTable"><%=location.avg_profit%></td>
+            </tr>
+            <tr>
+                <th scope="col">Occupancy</th>
+                <td scope="col" class="cashTable"><%=location.occupancy%>%</td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <h4 class="text-center">Profit per star and bed ($)</h4>
+    <canvas id="starchart"></canvas>
+    <small class="text-center text-muted">This data can be inaccurate. If users have bought or sold beds in the current month, the profit per bed is no longer correct.</small>
+
+
+
+</div>
+
+<script>
+    var profitdata =  <%- profitperstarandbed%>
+    var bedsdata = <%- beds %>
+
+    Chart.defaults.global.defaultFontFamily = "'Raleway', 'sans-serif'";
+    Chart.defaults.global.defaultFontSize = 14;
+    Chart.defaults.global.title.fontSize = 18;
+    
+    var chart = document.getElementById('starchart').getContext('2d');
+    var plot = new Chart(chart, {
+        type: 'bar',
+        data:{
+            labels: ['', '☆', '☆☆', '☆☆☆', '☆☆☆☆', '☆☆☆☆☆', '☆☆☆☆☆☆'],
+            datasets: [{
+                label: 'Profit per Bed',
+                data: profitdata,
+                backgroundColor: '#3a243b',
+                borderColor: '#FFF',
+                borderWidth: 1,
+                yAxisID:'Profit'
+            }, {
+                label: 'Beds',
+                data: bedsdata,
+                hidden: true,
+                yAxisID:'Beds',
+                borderColor: '#777',
+                borderWidth: 1,
+            }]
+        },
+        options:{
+            scales:{
+                yAxes:[{
+                    id: 'Profit',
+                    type: 'linear',
+                    position: 'left',
+                    ticks:{
+                        beginAtZero: true
+                    }
+                },{
+                    id: 'Beds',
+                    type: 'linear',
+                    position: 'right'
+                }]
+            }
+        }
+    })
+</script>
+
+<%- include("./partials/footer") %>

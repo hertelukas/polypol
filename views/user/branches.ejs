@@ -1,0 +1,288 @@
+<%- include("../partials/header") %>
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-2">Branches</h1>
+        <h5 class="text-muted"> - <%= currentUser.chainName %> -</h5>
+        
+        <hr>
+
+        <h3>Your Branches</h3>
+        <i data-toggle='popover' data-trigger='hover focus' data-content="Here you can manage your branches. Press on a city to manage a specific branch. You can sort your branches by clicking on the column title!" class="text-center material-icons" id="info">info</i>
+        <br>
+        <small>Auto renovation</small>
+        <br>
+        <label class="switch" data-toggle='popover' data-trigger='hover focus' data-content="Enable auto renovation. This costs you 50% more as doing it manually.">
+            <input name="autorenovate" id="renovateSwitch" checked type="checkbox">
+            <span class="slider renovate round"></span>
+        </label>
+        <hr>
+        <small>Update all your branches matching your input. Every branch costs you $5,000 to upgrade. This can take a while.</small>
+        <br>
+
+        <form action="/branches/autoUpdate" method="post" class="form-inline">
+                Set every branch with an occupancy 
+                <div class="dropdown dropdown-inline">
+                    <%if(currentUser.dark){%>
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="lowerHigherButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">above</button>
+                    <%}else{%>
+                        <button class="btn btn-outline-dark dropdown-toggle" type="button" id="lowerHigherButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">above</button>
+                    <%}%>
+                    <ul class="dropdown-menu" aria-labelledby="lowerHigherButton" id="lowerHigher"></ul>
+                </div>
+                <input type="number" name="occupancy" max="100" min="0" value="100" class="short-input">
+                % in
+                <input type="text" name="location" value="everywhere" class="medium-input">
+                to a price of 
+                <input type="number" name="priceFactor" max="150" min="50" value="100" step="10" class="short-input">
+                %
+                <input type="checkbox" name="higher" id="higherCheckbox" hidden checked>
+            <%if(currentUser.dark){%>
+                <button type="submit" class="btn btn-outline-light">Update</button>
+            <%}else{%>
+                <button type="submit" class="btn btn-outline-dark">Update</button>
+            <%}%>
+        </form>
+        <table class="table table-striped branches-table">
+            <thead>
+                <tr>
+                    <%if(currentUser.dark){%>
+                        <th scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByCity">City</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByBeds">Beds</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByStars">Stars</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByOccupancy">Occupancy</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByRenovation">Next Renovation</Button></th>
+                        <th scope="col" class="align-middle">Price</th>
+                        <th class="cashTable" scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByProfitPerBed">Profit per Bed</Button></th>
+                        <th class="cashTable" scope="col"><Button class="btn btn-outline-light btn-sort" id="sortByProfit">Profit</Button></th>
+                    <%}else{%>
+                        <th scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByCity">City</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByBeds">Beds</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByStars">Stars</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByOccupancy">Occupancy</Button></th>
+                        <th scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByRenovation">Next Renovation</Button></th>
+                        <th scope="col" class="align-middle">Price</th>
+                        <th class="cashTable" scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByProfitPerBed">Profit per Bed</Button></th>
+                        <th class="cashTable" scope="col"><Button class="btn btn-outline-dark btn-sort" id="sortByProfit">Profit</Button></th>
+                    <%}%>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <small>Branches that are on sale are coloured purple. These cannot be edited.</small>
+</div>
+
+<script>
+    var home = document.getElementById("branchesNav");
+    home.classList.add("active");
+
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    });
+
+    var cityButton = document.getElementById("sortByCity");
+    var bedsButton = document.getElementById("sortByBeds");
+    var starsButton = document.getElementById("sortByStars");
+    var occupancyButton = document.getElementById("sortByOccupancy");
+    var renovationButton = document.getElementById("sortByRenovation");
+    var profitButton = document.getElementById("sortByProfit");
+    var profitBedButton = document.getElementById("sortByProfitPerBed");
+
+
+    var tbody = document.getElementById('tableBody');
+
+    var user = <%-user%>
+    var locations = <%-locations%>
+    var branches = user['branches'];
+
+    branches.forEach(branch => {
+        branch.beds = parseInt(branch.beds);
+        branch.profit = parseFloat(branch.profit[branch.profit.length - 1]);
+        if(Number.isNaN(branch.profit)) branch.profit = 0;
+        branch.profitPerBed = parseFloat(branch.profit / branch.beds);
+    });
+
+    var up = false;
+
+    PlotBranches('city');
+
+    cityButton.addEventListener("click", function(){
+        PlotBranches('city');
+    });
+
+    bedsButton.addEventListener("click", function(){
+        PlotBranches('beds');
+    });
+
+    starsButton.addEventListener("click", function(){
+        PlotBranches('stars');
+    });
+
+    occupancyButton.addEventListener("click", function(){
+        PlotBranches("capacity");
+    });
+
+    profitButton.addEventListener("click", function(){
+        PlotBranches("profit");
+    });
+
+    profitBedButton.addEventListener("click", function(){
+        PlotBranches("profitPerBed");
+    });
+
+    renovationButton.addEventListener("click", function(){
+        PlotBranches("renovation");
+    });
+
+
+    function PlotBranches(sortby){
+        tbody.innerHTML = '';
+        up = !up;
+        branches.sort(function(a,b){
+            if(up){
+                if(a[sortby] > b[sortby]) return 1;
+                if(a[sortby] < b[sortby]) return -1;
+                return 0;
+            }else{
+                if(a[sortby] > b[sortby]) return -1;
+                if(a[sortby] < b[sortby]) return 1;
+                return 0;
+            }
+
+        });
+
+        branches.forEach(branch => {
+            if(!branch.capacity){
+                branch.capacity = [];
+            }
+
+            var tr = document.createElement('tr');
+            var th = document.createElement('th');
+            var link = document.createElement('a');
+            if(!branch.onSale){
+                link.href = '/branches/' + branch['_id'];
+            }else{
+                tr.classList.add('highlight-danger');
+            }
+            link.innerText = branch['city'];
+            th.appendChild(link);
+
+            th.scope = 'row';
+            tr.appendChild(th);
+
+            var tdBeds = document.createElement('td');
+            tdBeds.innerText = branch['beds'];
+            tr.appendChild(tdBeds);
+
+            var tdStars = document.createElement('td');
+            tdStars.innerText = branch['stars'];
+            tr.appendChild(tdStars);
+
+            var tdCapacity = document.createElement('td');
+            var location = locations.find(x => x.city == branch['city']);
+            var beds = location.beds;
+            var visitors = location.visitors;
+            var capacity;
+            var capacityText;
+            if(beds == undefined){
+                capacityText = '-';
+            }else{
+                capacity = parseFloat(visitors) / parseFloat(beds);
+                branch.capacity.push(capacity);
+                if(capacity > 1){
+                    capacityText = '100%';
+                    tdCapacity.classList.add('text-success');
+                }else if(capacity > 0.5){
+                    capacityText = (capacity * 100).toFixed(1) + '%';
+                    tdCapacity.classList.add('text-warning');
+                }else{
+                    capacityText = (capacity * 100).toFixed(1) + '%';
+                    tdCapacity.classList.add('text-danger');
+                }
+                if(user.salesperson){
+                    var salesPersonCapacity = capacity + 0.2;
+                    if(salesPersonCapacity < 1) capacityText += ' (' + (salesPersonCapacity * 100).toFixed(1) + '%)';
+                    else if(capacity < 1){
+                        capacityText += ' (100%)';
+                        tdCapacity.classList.remove('text-warning');
+                        tdCapacity.classList.remove('text-danger');
+                        tdCapacity.classList.add('text-success');
+                    } 
+                }
+            }
+
+            tdCapacity.innerText = capacityText;
+            tr.appendChild(tdCapacity);
+
+            var tdRenovation = document.createElement('td');
+            tdRenovation.innerText = branch.renovation;
+            if(branch.renovation < 0){
+                tdRenovation.classList.add('text-danger');
+            }
+            tr.appendChild(tdRenovation);
+
+            var tdPrice = document.createElement('td');
+            tdPrice.innerText = ((branch.priceFactor) * 100).toFixed() +'%';
+            tr.appendChild(tdPrice);
+
+            var tdPerBed = document.createElement('td');
+            tdPerBed.innerText = formatter.format(branch.profitPerBed);
+            tdPerBed.classList.add('cashTable');
+            if(branch.profitPerBed < 0){
+                tdPerBed.classList.add('text-danger');
+            }
+            tr.appendChild(tdPerBed);
+
+
+            var tdProfit = document.createElement('td');
+            tdProfit.innerText = formatter.format(branch.profit);
+            tdProfit.classList.add('cashTable');
+            if(branch.profit < 0 ){
+                tdProfit.classList.add('text-danger');
+            }
+            tr.appendChild(tdProfit);        
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    var checkbox = document.getElementById("renovateSwitch");
+
+    if(user.autorenovate) checkbox.checked = true;
+    else checkbox.checked = false;
+
+    checkbox.addEventListener('change', function(){
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/branches/autorenovate', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({
+            autorenovate: this.checked
+        }));
+    });
+
+    var lowerHigherDropdown = document.getElementById('lowerHigher');
+    var lowerHigherButton = document.getElementById('lowerHigherButton');
+    var higherCheckbox = document.getElementById('higherCheckbox');
+    var higherButton = document.createElement('span');
+    higherButton.className = 'dropdown-item';
+    higherButton.innerText = 'above';
+    higherButton.addEventListener('click', function(){
+        higherCheckbox.checked = true;
+        lowerHigherButton.innerText = 'above';
+    });
+    lowerHigherDropdown.appendChild(higherButton);
+
+    var lowerButton = document.createElement('span');
+    lowerButton.className = 'dropdown-item';
+    lowerButton.innerText = 'below';
+    lowerButton.addEventListener('click', function(){
+        higherCheckbox.checked = false;
+        lowerHigherButton.innerText = 'below';
+    });
+    lowerHigherDropdown.appendChild(lowerButton);
+
+</script>
+
+<%- include("../partials/footer") %>

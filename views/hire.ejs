@@ -1,0 +1,111 @@
+<%- include("./partials/header") %>
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-2">Hire specialists</h1>
+        <h5 class="text-muted"> - <%= currentUser.chainName %> -</h5>
+
+        <hr>
+        <i data-toggle='popover' data-trigger='hover focus' data-content="Hire specialists to develop a unique marketing strategy." class="text-center material-icons" id="info">info</i>
+        
+        <div id="hire-container">
+            <h3>- The Accountant -</h3>
+            <p>Every large company needs a good accountant. They may be expensive, but they have an enormous value: they help you with your taxes and give you deeper insight into your finances.</p>
+            <%if(currentUser.dark){%>
+                <button class="btn btn-outline-light btn-hire" id="accountant">Hire the accountant</button>
+            <%}else{%>
+                <button class="btn btn-outline-dark btn-hire" id="accountant">Hire the accountant</button>
+            <%}%>
+            <h3>- The Banker -</h3>
+            <p>The banker can hire you anything that has to do with money. He has good connections in the financial world and can open up a whole new section for you: The banker allows you to take out loans from the bank.</p>
+            <%if(currentUser.dark){%>
+                <button class="btn btn-outline-light btn-hire" id="banker">Hire the banker</button>
+            <%}else{%>
+                <button class="btn btn-outline-dark btn-hire" id="banker">Hire the banker</button>
+            <%}%>
+            <h3>- The Salesperson -</h3>
+            <p>Marketing, advertising and always one step ahead: the salesperson can do everything. No matter how occupied the cities are, your hotels are definitely better occupied than those of the competition!</p>
+            <%if(currentUser.dark){%>
+                <button class="btn btn-outline-light btn-hire" id="salesperson">Hire the salesperson</button>
+            <%}else{%>
+                <button class="btn btn-outline-dark btn-hire" id="salesperson">Hire the salesperson</button>
+            <%}%>
+            <br>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="hireModal" tabindex="-1" role="dialog" aria-labelledby="hireModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="hireModalLabel"></h5>
+                <button class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="hireModalBody"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                <form action="/hire" method="post">
+                    <input type="text" name="item" hidden id="item">
+                    <%if(currentUser.dark){%>
+                        <button type="submit" class="btn btn-outline-light" id="buyButton"></button>
+                    <%}else{%>
+                        <button type="submit" class="btn btn-outline-dark" id="buyButton"></button>
+                    <%}%>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var nav = document.getElementById("specialistsNav");
+    nav.classList.add("active");
+    var user = <%- currentUserJSON %>;
+
+
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    });
+
+    var accountantButton = document.getElementById('accountant');
+    var bankerButton = document.getElementById('banker');
+    var salespersonButton = document.getElementById('salesperson');
+    var modalTitle = document.getElementById('hireModalLabel');
+    var modalBody = document.getElementById('hireModalBody');
+    var buyButton = document.getElementById('buyButton');
+    var item = document.getElementById('item');
+
+    if(user.accountant) accountantButton.setAttribute('disabled', '');
+    if(user.banker) bankerButton.setAttribute('disabled', '');
+    if(user.salesperson) salespersonButton.setAttribute('disabled', '');
+
+    accountantButton.addEventListener('click', function(){
+        modalTitle.innerText = "Hire the accountant";
+        buyButton.innerText = "$14,000 per month";
+        modalBody.innerHTML = "<b>My Services</b> <ul> <li> About 10% lower taxes </li> <li> I can give you a deeper insight into your finances (Future update) </li> "
+        item.value = "accountant";
+        $('#hireModal').modal('toggle');
+    });
+
+    bankerButton.addEventListener('click', function(){
+        modalTitle.innerText = "Hire the banker";
+        buyButton.innerText = "$11,000 per month";
+        modalBody.innerHTML = "<b>My Services</b> <ul> <li>Take loans</li> <li>Get access to banking </li> "
+        item.value = "banker";
+        $('#hireModal').modal('toggle');
+    });
+
+    salespersonButton.addEventListener('click', function(){
+        modalTitle.innerText = "Hire the salesperson";
+        buyButton.innerText = "$45,000 per month";
+        modalBody.innerHTML = "<b>My Services</b> <ul> <li>I manage marketing and advertising for all your branches!</li> <li>Increase the occupancy</li> "
+        item.value = "salesperson";
+        $('#hireModal').modal('toggle');
+    });
+</script>
+<%- include("./partials/footer") %>

@@ -1,0 +1,324 @@
+<%- include("../partials/header") %>
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-2">New Branch</h1>
+        <h5 class="text-muted"> - <%= currentUser.chainName %> - </h5>
+        <hr>
+        <p class="d-xl-none text-muted" id="cash"></p>
+        <i data-toggle='popover' data-trigger='hover focus' data-content="Buy a new branch. Be careful, a renovation later is always more expensive." class="text-center material-icons" id="info">info</i>
+        <br>
+    </div>
+    <div class="row branches-table d-flex text-center">
+        <div class="col-md-6 col-lg-3">
+            <div class="dropdown">
+                <%if(currentUser.dark){%>
+                    <button class="btn btn-outline-light dropdown-toggle" type="button" id="countriesMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Country</button>
+                <%}else{%>
+                    <button class="btn btn-outline-dark dropdown-toggle" type="button" id="countriesMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Country</button>
+                <%}%>
+                <ul class="dropdown-menu" aria-labelledby="countriesMenuButton" id="countries">
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="dropdown">
+                <%if(currentUser.dark){%>
+                    <button class="btn btn-outline-light dropdown-toggle disabled" type="button" id="citiesMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">City</button>
+                <%}else{%>
+                    <button class="btn btn-outline-dark dropdown-toggle disabled" type="button" id="citiesMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">City</button>
+                <%}%>
+
+                <ul class="dropdown-menu" aria-labelledby="citiesMenuButton" id="cities">
+                </ul>
+            </div>
+        </div>
+        <br>
+        <div class="col-md-6 col-lg-3">     
+            <div class="dropdown">
+                <%if(currentUser.dark){%>
+                    <button class="btn btn-outline-light dropdown-toggle disabled" type="button" id="starsMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Stars</button>
+                <%}else{%>
+                    <button class="btn btn-outline-dark dropdown-toggle disabled" type="button" id="starsMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Stars</button>
+                <%}%>
+                <ul class="dropdown-menu" aria-labelledby="starsMenuButton" id="stars">
+                </ul>
+            </div>     
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" >Number of Beds</span>
+                </div>
+                <input disabled type="number" class="form-control" id="bedsCount" placeholder="100" max="7000" min="5">
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <h3>Overview</h3>
+    </div>
+
+    <div class="row">
+        <table class="table table-striped ">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">City</th>
+                    <td id="cityNameTable">-</td>
+                </tr>
+                <tr>
+                    <th scope="row">Stars</th>
+                    <td id="starsTable">3</td>
+                </tr>
+                <tr>
+                    <th scope="row"># of Beds</th>
+                    <td id="bedsTable">100</td>
+                </tr>
+                <tr>
+                    <th scope="row">Total Visitors per year index          
+                        <i data-toggle='popover' data-trigger='hover focus' data-content="This numbers shows the current tourists visiting this city." class="text-center material-icons" id="info">info</i>
+                    </th>
+                    <td id="visitorsTable">-</td>
+                </tr>
+                <tr>
+                    <th scope="row">Current occupancy
+                        <i data-toggle='popover' data-trigger='hover focus' data-content="This numbers shows how many beds are available in this city relative to it's visitors. If this number is over 100%, every bed in this city is occupied." class="text-center material-icons" id="info">info</i>
+                    </th>
+                    <td id="occupancyTable">-</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br>
+    
+    <h3 id="price">Price: $- </h3>
+
+    <form action="/users/<%=user._id%>/branches/new" method="post" class="form-inline">
+        <input type="text" hidden name="price" id="priceForm">
+        <input type="text" hidden name="city" id="cityForm">
+        <input type="text" hidden name="stars" id="starsForm">
+        <input type="text" hidden name="beds" id="bedsForm">
+        <input type="text" hidden name="times" value="1">
+        <%if(currentUser.dark){%>
+            <button type="submit" class="btn btn-lg btn-outline-light disabled" id="buy" disabled>Buy </button>
+        <%}else{%>
+            <button type="submit" class="btn btn-lg btn-outline-dark disabled" id="buy" disabled>Buy </button>
+        <%}%>
+    </form>
+    <form action="/users/<%=user._id%>/branches/new" method="post" class="form-inline">
+        <input type="text" hidden name="price" id="priceFormFive">
+        <input type="text" hidden name="city" id="cityFormFive">
+        <input type="text" hidden name="stars" id="starsFormFive">
+        <input type="text" hidden name="beds" id="bedsFormFive">
+        <input type="text" hidden name="times" value="5">
+        <%if(currentUser.dark){%>
+            <button type="submit" class="btn btn-lg btn-outline-light disabled" id="buyFive" disabled>Buy </button>
+        <%}else{%>
+            <button type="submit" class="btn btn-lg btn-outline-dark disabled" id="buyFive" disabled>Buy </button>
+        <%}%>
+    </form>
+</div>
+
+<script>
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    });
+
+    var home = document.getElementById("branchesNav");
+    home.classList.add("active");
+
+    var countriesDropdown = document.getElementById("countries");
+    var citiesDropdown = document.getElementById("cities");
+    var starsDropdown = document.getElementById("stars");
+    var bedsInput = document.getElementById("bedsCount");
+    
+    var buyButton = document.getElementById("buy");
+    var buyFiveButton = document.getElementById("buyFive")
+    var priceTag = document.getElementById("price");
+
+    var cityNameTable = document.getElementById("cityNameTable");
+    var starsTable = document.getElementById("starsTable");
+    var bedsTable = document.getElementById("bedsTable");
+    var visitorsTable = document.getElementById("visitorsTable");
+    var occupancyTable = document.getElementById("occupancyTable");
+    var cash = document.getElementById('cash');
+
+    var tempPrice = 10;
+    var selectedCity;
+    var price = 0;
+    var stars = 3;
+    var beds = 100;
+    
+    var tempVisitors = '-';
+    var citiesDict = {};
+    citiesDict = <%-cities%>;
+
+    bedsInput.value = beds;
+
+    for (let i = 0; i < 7; i++) {
+        var button = document.createElement("button");
+        button.className = "dropdown-item";
+        button.innerText = i;
+        button.addEventListener('click', function(){
+            stars = i;
+            UpdatePrice(null);
+        })
+        starsDropdown.appendChild(button);        
+    }
+
+    bedsInput.addEventListener("change", function(){
+        if(bedsInput.value <= 5){
+            bedsInput.value = 5;
+        }
+        if(bedsInput.value >= 7000){
+            bedsInput.value = 7000;
+        }
+        beds = bedsInput.value;
+        UpdatePrice(null);
+    })
+
+    countriesArray = <%-countries%>
+    countriesArray.forEach(country => {
+        var li = document.createElement("li");
+        var button = document.createElement("button");
+        var text = document.createTextNode(country);
+        button.appendChild(text);
+        button.className = "dropdown-item";
+        button.addEventListener("click", function(){
+            buyButton.classList.add("disabled");
+            bedsInput.setAttribute("disabled", "");
+            price = 0;
+            UpdatePrice(null);
+            UpdateCities(country);
+        });
+        li.appendChild(button);
+        countriesDropdown.appendChild(li);
+    });
+
+    function UpdateCities(name){
+        citiesDropdown.innerHTML = '';
+        priceTag.classList.remove('text-danger');
+        document.getElementById("citiesMenuButton").innerText = "City";
+        document.getElementById("countriesMenuButton").innerText = name;
+        document.getElementById("citiesMenuButton").classList.remove("disabled");
+        citiesArray = citiesDict[name];
+        citiesArray.forEach(city =>{
+            var li = document.createElement("li");
+            var button = document.createElement("button");
+            var text = document.createTextNode(city['name']);
+            button.appendChild(text);
+            button.className = "dropdown-item";
+            button.addEventListener("click", function(){
+                CitySelected(city);
+            });
+            li.appendChild(button);
+            citiesDropdown.appendChild(li);
+        });
+        CitySelected(citiesArray[0]);
+    }
+
+    var tempOccupancy;
+
+    function CitySelected(city){
+        selectedCity = city['name'];
+        tempVisitors = city['visitors'].toFixed();
+        document.getElementById("citiesMenuButton").innerText = selectedCity;
+        document.getElementById("starsMenuButton").classList.remove("disabled");
+        bedsInput.removeAttribute("disabled");
+        price = city['value'];
+        if(city['beds'] && city['beds'] != 0){
+            tempOccupancy = city['visitors'] / city['beds'];
+        }else{
+            tempOccupancy = "No hotels at all!";
+        }
+        UpdatePrice();
+    }
+
+    function UpdatePrice(){
+        tempPrice = parseInt(parseFloat(price) + parseFloat(price * stars ** 4) + parseFloat(beds * 0.01 * price) * 1000);
+        tempPriceString = formatter.format(tempPrice);
+        tempFivePriceString = formatter.format(tempPrice * 5);
+
+        if(tempPrice > <%-currentUser.cash%>){
+            buyButton.setAttribute("disabled", "");
+            buyButton.classList.add('disabled');
+
+            if(tempPrice === 0 || tempPrice === null){
+                priceTag.classList.remove('text-danger');
+            }else{
+                priceTag.classList.add('text-danger');
+            }
+        }else if(tempPrice > 0){
+            buyButton.removeAttribute("disabled");
+            buyButton.classList.remove('disabled');
+            priceTag.classList.remove('text-danger');
+        }
+
+        if(tempPrice * 5 > <%-currentUser.cash %>){
+            buyFiveButton.setAttribute('disabled', '');
+            buyFiveButton.classList.add('disabled');
+        }else if(tempPrice > 0){
+            buyFiveButton.removeAttribute('disabled');
+            buyFiveButton.classList.remove('disabled');
+        }
+
+        if(tempPrice != null && tempPrice != 0){
+            priceTag.innerText = "Price: " + tempPriceString;
+            buyButton.innerText = "Buy for " + tempPriceString;
+            buyFiveButton.innerText = "Buy 5 for " + tempFivePriceString;
+        }else{
+            priceTag.innerText = "Price: $-";
+            buyButton.innerText = "Buy";
+        }
+
+        if(selectedCity){
+            cityNameTable.innerText = selectedCity;
+        }
+        starsTable.innerText = stars;
+        bedsTable.innerText = beds;
+        visitorsTable.innerText = tempVisitors;
+        occupancyTable.classList = null;
+        
+        if(tempOccupancy){
+            if(typeof(tempOccupancy) != "string"){
+                occupancyTable.innerText = (tempOccupancy * 100).toFixed(2) + '%';
+            }else{
+                occupancyTable.innerText = tempOccupancy;
+            }    cash.innerText = formatter.format(user.cash);
+
+        }
+
+        if(typeof(tempOccupancy) == "number"){
+            if(tempOccupancy > 1){
+                occupancyTable.classList.add('text-success');
+            }else if(tempOccupancy > 0.75){
+                occupancyTable.classList.add('text-warning');
+            }else{
+                occupancyTable.classList.add('text-danger')
+            }
+        }
+        document.getElementById("priceForm").value = tempPrice;
+        document.getElementById("cityForm").value = selectedCity;
+        document.getElementById("bedsForm").value = beds;
+        document.getElementById("starsForm").value = stars;
+
+        document.getElementById("priceFormFive").value = tempPrice;
+        document.getElementById("cityFormFive").value = selectedCity;
+        document.getElementById("bedsFormFive").value = beds;
+        document.getElementById("starsFormFive").value = stars;
+    }
+
+    var user = <%- currentUserJSON %>;
+
+    cash.innerText = formatter.format(user.cash);
+
+</script>
+
+
+
+<%- include("../partials/footer") %>

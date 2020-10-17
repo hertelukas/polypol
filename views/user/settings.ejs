@@ -1,0 +1,100 @@
+<%- include("../partials/header") %>
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-2">Settings</h1>
+        <h5 class="text-muted"> - <%= user.chainName %> -</h5>
+
+        <hr>
+
+        <h2>User settings</h2>
+        <form action="/users/<%=user._id%>/update" method="post">
+            <div class="form-group">
+                <label for="usernameInput" class="settings-text"><i data-toggle='popover' data-trigger='hover focus' data-content="Your username is private."
+                    class="material-icons" id="info">info</i> Username</label>
+                <input class="form-control settings-input" type="text" name="username" id="usernameInput" value="<%= user.username%>" required>
+            </div>
+            <div class="form-group">
+                <label for="chainNameInput" class="settings-text"><i data-toggle='popover' data-trigger='hover focus' data-content="Your chain name is visible to every player and listed on the leaderboard. It has no influence on your profit."
+                     class="material-icons" id="info">info</i> Chain Name</label>
+                <input class="form-control settings-input" type="text" name="chainName" id="chainNameInput" value="<%= user.chainName%>" required>
+            </div>
+            <div class="form-group">
+                <label for="mailInput" class="settings-text"><i data-toggle='popover' data-trigger='hover focus' data-content="Change your mail."
+                    class="material-icons" id="info">info</i> Mail</label>
+                <input type="mail" class="form-control settings-input" value="<%=user.mail%>" name="mail" id="mailInput" required>
+            </div>
+            <%if(currentUser.dark){%>
+                <button type="submit" class="btn btn-outline-light">Update</button>
+            <%}else{%>
+                <button type="submit" class="btn btn-outline-dark">Update</button>
+            <%}%>
+
+        </form>
+        <br>
+
+        <button class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal">Delete Account</button>
+        <br>
+
+        <%if(!currentUser.mailConfirmed){%>
+            <br>
+            <form action="/users/resendConfirmation" method="POST">
+                <div class="form-group margin-top">
+                    <%if(currentUser.dark){%>
+                        <button type="submit" class="form-control settings-input btn btn-outline-light">Resend confirmation mail</button>
+                    <%}else{%>
+                        <button type="submit" class="form-control settings-input btn btn-outline-dark">Resend confirmation mail</button>
+                    <%}%>
+                </div>
+            </form>
+        <%}else {%>
+            <br>
+            <a href="https://www.patreon.com/bePatron?u=35719812" data-patreon-widget-type="become-patron-button">Become a Patron!</a><script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
+            <small class="margin-bottom">
+                This project is developed by a student. This means you have to be aware of it that a next update could ruin the game, that the database somehow brakes or all your data gets lost.
+                Since the demand for the game was much higher than expected, I had to upgrade the servers, which increased my costs.
+            </small>
+            <br>
+        <%}%>
+
+        <!-- Modal -->
+
+        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteAccountModal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Delete Account</h5>
+                        <button class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>We will delete your account immediately. This can not be undone.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                        <form action="/users/<%=user._id%>/delete" method="post">
+                            <button type="submit" class="btn btn-outline-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="footer d-flex justify-content-center">
+    <a href="/contact">Contact</a>
+    <a href="/privacy">Privacy</a>
+    <a href="/terms">Terms</a>
+  </div>
+
+<script>
+    var home = document.getElementById("profileNav");
+    home.classList.add("active");
+
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    })
+</script>
+
+<%- include("../partials/footer") %>

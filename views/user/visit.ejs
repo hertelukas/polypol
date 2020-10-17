@@ -1,0 +1,68 @@
+<%- include("../partials/header") %>
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-2" id="name"> </h1>
+        <h5 class="text-muted" id="cash"> - -</h5>
+        
+        <hr>
+        <h3>Owned Branches</h3>
+        <br>
+
+        <table class="table table-striped leaderboardTable">
+            <thead>
+                <tr>
+                    <th scope="col">City</th>
+                    <th scope="col">Beds</th>
+                    <th scope="col">Stars</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+            </tbody>
+        </table>
+        <p id="totalBranches"></p>
+    </div>
+</div>
+
+<script>
+    var netWorth = document.getElementById('cash');
+    var chainName = document.getElementById('name');
+    var tbody = document.getElementById('tbody');
+    var totalBranches = document.getElementById('totalBranches');
+
+    var user = <%-user%>;
+
+    totalBranches.innerText = `${user.chainName} has a total of ${user.totalBranches} branches!`;
+
+    if(user.chainName){
+        chainName.innerText = user.chainName;
+    }else{
+        chainName.innerText = '-';
+    }
+    netWorth.innerText ='- ' + formatter.format(user.netWorth) + ' -';
+    
+    user.branches.forEach(branch => {
+        var tr = document.createElement('tr');
+
+        var tCity = document.createElement('th');
+        var aCity = document.createElement('a');
+        aCity.innerText = branch.city;
+        aCity.href = '/locations/' + branch.cityid;
+        tCity.appendChild(aCity);
+        tr.appendChild(tCity);
+
+        var tBeds = document.createElement('td');
+        tBeds.innerText = branch.beds;
+        tr.appendChild(tBeds);
+        
+        var tStars = document.createElement('td');
+        for (let i = 0; i < branch.stars; i++) {
+            tStars.innerHTML += '&#9734';
+        }
+        tr.appendChild(tStars);
+
+        tbody.appendChild(tr);
+    });
+    
+</script>
+
+<%- include("../partials/footer") %>

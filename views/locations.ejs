@@ -1,0 +1,84 @@
+<%- include("./partials/header") %>
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-2">Locations</h1>
+        <h5 class="text-muted"> - All locations and information -</h5>
+        <hr>
+        <i data-toggle='popover' data-trigger='hover focus' data-content="Radius shows total visitors. If the town is red, a lot of beds aren't occupied. Yellow means some beds aren't occupied and if the city is green, all beds are occupied." class="text-center material-icons" id="info">info</i>
+
+        <br>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+        <script src="/scripts/datamaps.world.min.js"></script>
+        <div id="map" style="position: relative; margin:auto; width: 100%; height: 550px;"></div>
+
+        <h4>Visitors index: <%=visitors%></h4>
+        <h4>Total beds: <%=beds%></h4>
+    </div>
+
+</div>
+
+<script>
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    })
+    var locationsNav = document.getElementById("locationsNav");
+    locationsNav.classList.add("active");  
+      
+    var locationsJSON = <%- locations %>
+
+    var locations = [];
+
+    var largestCity = 0;
+    locationsJSON.forEach(location => {
+        if(location.visitors > largestCity){
+            largestCity = location.visitors;
+        }
+        location.occupancy = location.visitors / location.beds;
+        if(location.occupancy > 1){
+            location.occupancy = 1;
+        }
+        location.visitors = location.visitors.toFixed();
+    });
+
+    locationsJSON.forEach(location => {
+        location.radius = location.visitors / largestCity * 17;
+        if(location.radius < 2) location.radius = 2;
+        if(location.beds > location.visitors * 1.5){
+            location.fillKey = 'full';
+        }else if(location.beds > location.visitors){
+            location.fillKey = 'semi';
+        }else{
+            location.fillKey = 'free';
+        }
+    });
+
+    var map = new Datamap({
+        element: document.getElementById('map'),
+        geographyConfig: {
+            popupOnHover: false,
+            highlightOnHover: false
+        },
+        bubblesConfig: {
+            highlightFillColor: '#FFFFFF',
+        },
+        fills: {
+            defaultFill: '#3a243b',
+            full: '#FF0000',
+            semi: '#FFFF00',
+            free: '#00FF00'
+        }
+    });
+    map.bubbles(
+        locationsJSON,
+        {
+            popupTemplate: function(geo, data){
+                return '<div class ="hoverinfo"><b>' + data.city + ' </b> <br>Beds: ' + data.beds + '<br>Visitors index: ' + data.visitors + '<br>Occupancy: ' + (data.occupancy * 100).toFixed() + '%</div>';
+            }
+    });
+    d3.selectAll('.datamaps-bubble').on('click', function(bubble){
+        window.open('/locations/' + bubble._id, "_self");
+    });
+</script>
+
+<%- include("./partials/footer") %>

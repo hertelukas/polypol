@@ -1,0 +1,133 @@
+<%- include("./partials/header") %>
+
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-2">Leaderboard</h1>
+        <h5 class="text-muted"> - Top Hotel Chains -</h5>
+        <hr>
+
+        <% if(currentUser){%>
+            <div class="d-flex justify-content-center">
+                <a href="https://www.patreon.com/bePatron?u=35719812" target="_blank" class="btn btn-light btn-social">Patreon</a>
+                <a href="https://www.reddit.com/r/polypol/" target="_blank" class="btn btn-light btn-social">Reddit</a>
+                <a href="https://discord.gg/yDNHHue" target="_blank" class="btn btn-light btn-social">Discord</a>
+            </div>
+        <%}%>
+        <p id="your-place" class="text-muted"></p>
+
+
+        <table class="table table-striped leaderboardTable">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th class="cashTable" scope="col">Net Worth</th>
+                    <th scope="col">Branches</th>
+                </tr>
+            </thead>
+            <tbody id="tbodyLeaderboard">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    var leaderboard = document.getElementById("tbodyLeaderboard");
+    var place = document.getElementById("your-place");
+    var users = <%-users%>
+    var currentUserId = <%-currentUserId%>
+
+    users.sort(function(a, b){
+        if(parseFloat(a.net) > parseFloat(b.net)) return -1;
+        if(parseFloat(a.net) < parseFloat(b.net)) return 1;
+        return 0;
+    });
+
+    var i = 0;
+
+    users.forEach(user => {
+        i++;
+        if(i <= 100){
+            var tr = document.createElement('tr');
+            if(currentUserId && currentUserId == user.id){
+                tr.classList.add('highlight');
+            }
+            if(user.sponsor) tr.classList.add("sponsor");
+
+            var tNum = document.createElement('td');
+            tNum.innerText = i;
+            tr.appendChild(tNum);
+            
+            var th = document.createElement('th');
+            var a = document.createElement('a');
+            if(user.name) a.innerText = user.name;
+            else a.innerText = "-";
+            a.href = "/visit/" + user.id;
+            th.appendChild(a);
+            tr.appendChild(th);
+
+            var td = document.createElement('td');
+            td.classList.add("cashTable");
+            td.innerText = formatter.format(user.net);
+            tr.appendChild(td);
+
+            var tdBeds = document.createElement('td');
+            tdBeds.innerText = user.beds;
+            tr.appendChild(tdBeds);
+
+            leaderboard.appendChild(tr);
+        }
+        if(currentUserId && currentUserId == user.id) place.innerText = "Your place: " + i;
+    });
+</script>
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+
+<script>
+    var cashNavbar = document.getElementById("cashNavbar");
+
+    var formatter = new Intl.NumberFormat('en-US',{
+      style: 'currency',
+      currency: 'USD',
+    });
+
+    var user = <%-currentUserJSON%>;
+
+    if(user){
+      var countdown = '';
+
+      var x = setInterval(function(){
+        var now = new Date().getTime();
+        var secondsNow = Math.floor((now / 1000) % 60);
+        var minutesNow = Math.floor((now / 1000 / 60) % 60);
+        var updateTime = now - minutesNow * 60 - secondsNow + 3600;
+        
+        var distance = updateTime - now;
+
+        var minutes = 59 - minutesNow;
+        var seconds = 59 - secondsNow;
+
+        if(seconds < 10){
+          seconds = "0" + seconds;
+        }
+
+        if(distance > 0){
+          countdown = `${minutes}:${seconds}`;
+        }else{
+          countdown = 'Updating...'
+        }
+
+        var cash = user.cash;
+        cashNavbar.innerText = formatter.format(cash) + ' - ' + countdown;
+      }, 1000);
+
+    }   
+    
+
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" 
+<%if(currentUser && currentUser.dark === true){%>
+   data-theme = "dark"
+<%}%>
+>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polypol</title>
+    <meta name="description" content="Build your hotel empire and play against your friends all over the world. Start managing yours now in the best online tourism simulator!">
+    <!-- Google -->
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-164552647-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-164552647-1');
+    </script>
+
+
+    <!-- Style Sheets -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="/stylesheets/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,500i,700,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Scripts -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src ="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+    <script src="/scripts/jquery-3.4.1.min.js"></script>
+    <script data-ad-client="ca-pub-1414883349025666" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon">
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="/">Polypol</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav mr-auto">
+            <%if(currentUser){%>
+            <li class="nav-item" id="homeNav">
+              <a class="nav-link" href="/users/<%=currentUser._id%>">Home</a>
+            </li>
+            <li class="nav-item dropdown" id="branchesNav">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Branches
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="/users/<%=currentUser._id%>/branches">My branches</a>
+                <a class="dropdown-item" href="/market">Buy branch</a>
+                <a class="dropdown-item" href="/sell">Sell branch</a>
+                <a class="dropdown-item" href="/users/<%=currentUser._id%>/branches/new">New branch</a>
+              </div>
+            </li>
+            <li class="nav-item dropdown" id="specialistsNav">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Specialists
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="/specialists" class="nav-link">My specialists</a>
+                <a class="dropdown-item" href="/hire" class="nav-link"> Hire specialists</a>
+              </div>
+            </li>
+            <%if(currentUser.banker){%>
+              <li class="nav-item" id="bankNav">
+                <a class="nav-link" href="/bank%>">Bank</a>
+              </li>
+              <%}%>
+            <%}%>
+            <li class="nav-item">
+              <a href="/locations" class="nav-link" id="locationsNav">Locations</a>
+            </li>
+            <li class="nav-item">
+              <a href="/news" class="nav-link" id="newsNav">News</a>
+            </li>
+            <%if(!currentUser){%>
+              <li class="nav-item">
+                <a href="/leaderboard" class="nav-link" id="leaderboardNav">Leaderboard</a>
+              </li>
+              <li class="nav-item">
+                <a href="/sponsors" class="nav-link" id="sponsorsNav">Sponsors</a>
+              </li>
+              <%}%>
+          </ul>
+          <ul class="navbar-nav center-nav">
+            <%if(currentUser){%>
+              <li class="text-light d-none d-xxl-block" id="cashNavbar"></li>
+            <%}%>
+          </ul>
+          <ul class="navbar-nav">
+            <%if(currentUser){%>
+              <%if(currentUser.dark === true){ %>
+                <label class="switch" data-toggle='popover' data-trigger='hover focus' data-content="Switch to dark mode. Reload the page to ensure it gets displayed correctly">
+                  <input name="dark" id="themeSwitch" checked type="checkbox">
+                  <span class="slider round"></span>
+                </label>
+              <%}else {%>
+                <label class="switch" data-toggle='popover' data-trigger='hover focus' data-content="Switch to dark mode. Reload the page to ensure it gets displayed correctly">
+                  <input name="dark" id="themeSwitch"  type="checkbox">
+                  <span class="slider round"></span>
+                </label>              
+              <%}%>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  More
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                  <a href="/users/<%= currentUser._id %>/settings" id="profileNav" class="dropdown-item">Profile</a>
+                  <a href="/leaderboard" class="dropdown-item" id="leaderboardNav">Leaderboard</a>
+                  <a href="/chat"><i class="material-icons dropdown-item" id="chat">chat</i></a>
+                  <a href="/sponsors" class="dropdown-item" id="sponsorsNav">Sponsors</a>
+                  <a href="/logout" class="dropdown-item">Logout</a>
+                </div>
+              </li>
+
+              <%}else{%>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/login" >Login</a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="/register" class="nav-link">Register</a>
+                  </li>
+              <%}%>
+              <li>
+      
+              </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Flash -->
+      <div class="container">
+        <% if(error && error.length > 0){ %>
+          <div class="alert alert-dark" role="alert"> <%- error %></div>
+        <%}%>
+
+        <% if(success && success.length > 0){ %>
+          <div class="alert alert-primary" role="alert"> <%- success %></div>
+        <%}%>
+      </div>
+
+      <script>
+        var formatter = new Intl.NumberFormat('en-US',{
+            style: 'currency',
+            currency: 'USD',
+        });
+
+        $(function () {
+          $('[data-toggle="popover"]').popover()
+        });
+      </script>
+
+      <script>
+        var checkbox = document.getElementById('themeSwitch');
+        if(checkbox){
+          checkbox.addEventListener('change', function(){
+            if(this.checked){
+              trans()
+              document.documentElement.setAttribute('data-theme', 'dark');
+            }else{
+              trans()
+              document.documentElement.setAttribute('data-theme', 'light');
+            }
+            changeTheme(this.checked);
+          });
+        }
+
+        function changeTheme(dark){
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST', '/theme', true);
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.send(JSON.stringify({
+            dark: dark 
+          }));
+        }
+
+        let trans = () => {
+          document.documentElement.classList.add('transition');
+          window.setTimeout(() => {
+            document.documentElement.classList.remove('transition');
+          }, 500);
+        }
+
+      </script>

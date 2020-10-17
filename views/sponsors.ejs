@@ -1,0 +1,65 @@
+<%- include("./partials/header") %>
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-2">Sponsors</h1>
+        <h5 class="text-muted"> - List of Sponsors -</h5>
+        <hr>
+        <i data-toggle='popover' data-trigger='hover focus' data-content="Thank you so much for your support! You made this game possible!" class="text-center material-icons" id="info">info</i>
+
+        <table class="table table-striped leaderboardTable sponsorTable">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th class="cashTable" scope="col">Message</th>
+                </tr>
+            </thead>
+            <tbody id="tBodySponsors">
+            </tbody>
+        </table>
+        <br>
+        <a href="https://www.patreon.com/bePatron?u=35719812" data-patreon-widget-type="become-patron-button">Become a Patron!</a><script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
+            
+
+
+        <hr>
+        <h3>Paypal</h3>
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+            <input type="hidden" name="cmd" value="_s-xclick" />
+            <input type="hidden" name="hosted_button_id" value="Y95A967K95RKG" />
+            <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+            <img alt="" border="0" src="https://www.paypal.com/en_CH/i/scr/pixel.gif" width="1" height="1" />
+        </form>
+
+        <small>
+            This project is developed by a student. This means you have to be aware of it that a next update could ruin the game, that the database somehow brakes or all your data gets lost.
+            Since the demand for the game was much higher than expected, I had to upgrade the servers, which increased my costs.
+        </small>
+
+    </div>
+</div>
+
+<script>
+    var sponsorsNav = document.getElementById("sponsorsNav");
+    sponsorsNav.classList.add("active");
+    var users = <%-users%>;
+
+    var list = document.getElementById('tBodySponsors');
+
+    users.forEach(user => {
+        var tr = document.createElement('tr');
+
+        var tName = document.createElement('th');
+        var a = document.createElement('a');
+        a.innerText = user.chainName;
+        a.href = "/visit/" + user.id;
+        tName.appendChild(a);
+        tr.appendChild(tName);
+
+        var tText = document.createElement('td');
+        if(user.sponsorMessage) tText.innerText = user.sponsorMessage;
+        tr.appendChild(tText);
+
+        list.appendChild(tr);
+    });
+</script>
+<%- include("./partials/footer") %>

@@ -1,0 +1,644 @@
+<%- include("../partials/header") %>
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-2">Overview</h1>
+        <h5 class="text-muted"> - <%= currentUser.chainName %> - </h5>
+
+        <hr>
+        <p class="d-xxl-none text-muted" id="cash"></p>
+
+        <i data-toggle='popover' data-trigger='hover focus' data-content="See your account data. You can turn stats on and off by clicking on the labels." class="text-center material-icons" id="info">info</i>
+        <br>
+    </div>
+</div>
+<div class="container overview-container">
+    <div class="row">
+        <div class="col-lg-6">
+            <canvas id="profitCanvas"></canvas>
+        </div>
+        <div class="col-lg-6">
+            <canvas id="countries"></canvas>
+        </div>
+    
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-lg-6">
+            <canvas id="expenditure"></canvas>
+        </div>
+        <div class="col-lg-6">
+            <canvas id="netWorth"></canvas>
+        </div>
+    </div>
+</div>
+
+<br>    
+
+<div class="container branches-table">
+    <div class="row">
+        <div class="col-sm">
+            <h4 class="text-center">Top Branches</h4>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">City</th>
+                        <th class="cashTable" scope="col">Revenue</th>
+                    </tr>
+                </thead>
+                <tbody id="topCitiesList">
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm">
+            <h4 class="text-center">Worst Branches</h4>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">City</th>
+                        <th scope="col" class="cashTable">Financial Loss</th>
+                    </tr>
+                </thead>
+                <tbody id="worstCitiesList">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br>
+    <h4 class="text-center">Map</h4>
+    <div class="text-center">
+        <i data-toggle='popover' data-trigger='hover focus' data-content="Hover over your branches. The bigger the circle, the more beds" class="text-center material-icons" id="infoMap">info</i>
+    </div>
+    <div class="d-flex justify-content-around">
+        <%if(currentUser.dark){%>
+            <button class="btn btn-outline-light" id="profitMapButton">Profit</button>
+            <button class="btn btn-outline-light" id="bedsMapButton">Beds</button>
+        <%}else{%>
+            <button class="btn btn-outline-dark" id="profitMapButton">Profit</button>
+            <button class="btn btn-outline-dark" id="bedsMapButton">Beds</button>
+        <%}%>
+    </div>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+    <script src="/scripts/datamaps.world.min.js"></script>
+    <div id="map" style="position: relative; margin:auto; width: 100%; height: 550px;"></div>
+</div>
+
+
+
+
+<script>
+    var home = document.getElementById("homeNav");
+    home.classList.add("active");
+</script>
+
+<script>
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    });
+    var profitCanvas = document.getElementById('profitCanvas');
+    profitCanvas.height = 170;
+    Chart.defaults.global.defaultFontFamily = "'Raleway', 'sans-serif'";
+    Chart.defaults.global.defaultFontSize = 14;
+    Chart.defaults.global.title.fontSize = 18;
+    var cash = document.getElementById('cash');
+
+    var user = <%- user %>
+
+    if(user.dark){
+        Chart.defaults.global.defaultFontColor = '#FCFCFC';
+    }
+
+    //========================
+    //Profit Graph
+    //========================
+    
+    var profit = [];
+    var labels = user.labels;
+
+    user.profit.forEach(item => {
+        profit.push(item);
+    });
+
+    var currentTimeLabel;
+    var lastTimeLabel;
+
+    if(labels.length < 12){
+        lastLabels = labels;
+        lastProfit = profit;
+        yearBefore = null;
+        currentTimeLabel = 'Current period';
+        lastTimeLabel = '';
+    }else if(labels.length < 24){
+        length = parseInt(profit.length / 2);
+        var lastLabels = labels.splice(labels.length - length, length);
+        var lastProfit = profit.splice(profit.length - length,  length);
+        var yearBefore = profit.splice(profit.length -  length,  length);
+        currentTimeLabel = 'Current ' + length + ' months';
+        lastTimeLabel = 'Last ' + length + ' months';
+    }else{
+        var lastLabels = labels.splice(labels.length - 12, 12);
+        var lastProfit = profit.splice(profit.length - 12, 12);
+        var yearBefore = profit.splice(profit.length - 12, 12);
+        currentTimeLabel = 'Current year';
+        lastTimeLabel = 'Last year';
+    }
+
+    lastLabelsCut = [];
+    lastProfitCut = [];
+    yearBeforeCut = [];
+
+    lastLabels.forEach(label => {
+        if(!label.includes("January")){
+            label = label.substring(0, label.length-5);
+        }
+        lastLabelsCut.push(label);
+    });
+
+    var cuttedAt = '';
+
+    var maxSig = 0;
+
+    lastProfit.forEach(profit => {
+        var sigCount = getSignificantDigitCount(profit);
+        if(maxSig < sigCount){
+            maxSig = sigCount;
+        }
+    });
+    
+    var divideBy = 1;
+
+    if(maxSig >= 3){
+        cuttedAt = '1,000';
+        divideBy = 1000;
+    }
+    if(maxSig >= 7){
+        cuttedAt = '1,000,000';
+        divideBy = 1000000;
+    }
+
+    lastProfit.forEach(profit =>{
+        lastProfitCut.push((profit / divideBy).toFixed(2));
+    });
+
+    if(yearBefore){
+        yearBefore.forEach(profit =>{
+            yearBeforeCut.push((profit / divideBy).toFixed(2));
+        });
+    }
+
+    var backgroundColor = '#3a243bdd';
+    if(user.dark){
+        backgroundColor = '#3a243b66';
+    }
+
+    var myChart = new Chart(profitCanvas, {
+        type: 'line',
+        data: {
+            labels: lastLabelsCut,
+            datasets: [{
+                label: currentTimeLabel,
+                data: lastProfitCut,
+                borderColor: "#FFF",
+                borderWidth: 1,
+                pointRadius: 5,
+                pointHitRadius: 15,
+                hoverBorderWidth: 3,
+                lineTension: 0.4,
+                backgroundColor: backgroundColor
+            },
+            {
+                label: lastTimeLabel,
+                data: yearBeforeCut,
+                borderColor: '#777',
+                borderWidth: 1,
+                borderDash: [10,2],
+                hidden: true
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Profit ($' + cuttedAt +')',
+
+            }
+        }
+    });
+
+    //========================
+    //Beds Graph
+    //========================
+
+    var cities = [];
+    var beds = [];
+    var profits = [];
+
+    var list = [];
+
+    user.branches.forEach(branch => {
+        if(cities.includes(branch.city)){
+            beds[cities.indexOf(branch.city)] = parseInt(branch.beds) + parseInt(beds[cities.indexOf(branch.city)]);
+            profits[cities.indexOf(branch.city)] =parseFloat(branch.profit[branch.profit.length - 1]) + parseFloat(profits[cities.indexOf(branch.city)]);
+        }else{
+            cities.push(branch.city);
+            beds.push(branch.beds);
+            profits.push(branch.profit[branch.profit.length - 1]);
+        }        
+    });
+
+    for(var j = 0; j < cities.length; j++){
+        list.push({'city': cities[j], 'beds': beds[j], 'profits':  profits[j]});
+    }
+
+    list.sort(function(a,b){
+        return ((a.beds < b.beds) ? 1 : ((a.beds == b.beds) ? 0 : -1));
+    });
+
+    for (let k = 0; k < list.length; k++) {
+        cities[k] = list[k].city;
+        beds[k] = list[k].beds;
+        profits[k] = (list[k].profits / 1000).toFixed(2);
+    }
+
+
+    var countries = document.getElementById('countries');
+    countries.height = 170;
+    var countriesChart = new Chart(countries, {
+        type: 'bar',
+        data:{
+            labels: cities,
+            datasets: [{
+                label: 'Beds',
+                yAxisID: 'Beds',
+                data: beds,
+                backgroundColor: backgroundColor,
+                borderColor: "#FFF",
+                borderWidth: 1
+            }, {
+                label: 'Profit per month ($1,000)',
+                yAxisID:'Profit',
+                data: profits,
+                borderColor: '#777',
+                borderWidth: 1,
+                hidden: true
+            }]
+        },
+        options:{
+            title: {
+                display: true,
+                text: 'Hotels Overview'
+            },
+            scales:{
+                yAxes:[{
+                    id: 'Beds',
+                    type: 'linear',
+                    position: 'left',
+                    ticks:{
+                        beginAtZero: true
+                    }
+                },{
+                    id: 'Profit',
+                    type: 'linear',
+                    position: 'right'
+                }]
+            }
+        }
+    });
+
+    //========================
+    //Expenditure Graph
+    //========================
+
+    var staffExpenditure = 0;
+    var interiorExpenditure = 0;
+    var taxesExpenditure = 0;
+
+    user.branches.forEach(branch => {
+        if(branch.staff[branch.staff.length - 1]){
+            staffExpenditure += parseInt(branch.staff[branch.staff.length - 1]);
+        }
+        if(branch.interior[branch.interior.length - 1]){
+            interiorExpenditure += parseFloat(branch.interior[branch.interior.length -1]);
+        }
+        if(branch.taxes[branch.taxes.length - 1]){
+            taxesExpenditure += parseFloat(branch.taxes[branch.taxes.length - 1]);
+        }
+    });
+
+    staffExpenditure = staffExpenditure / 1000;
+    interiorExpenditure = interiorExpenditure / 1000;
+    if(taxesExpenditure === 0) taxesExpenditure = 'undefined';
+    else{
+        if(user.accountant) taxesExpenditure = 0.9 * taxesExpenditure;
+        taxesExpenditure = (taxesExpenditure / 1000).toFixed(2); 
+    } 
+    var loans = (user.toPay / 1000).toFixed(2);
+    if(user.loansRemaining <= 0) loans = 'undefined';
+
+    var expertsExpenditure = 0;
+    if (user.salesperson) expertsExpenditure += 45000;
+    if (user.banker) expertsExpenditure += 11000;
+    if (user.accountant) expertsExpenditure += 14000;
+    if(expertsExpenditure == 0) expertsExpenditure = 'undefined';
+    else expertsExpenditure = (expertsExpenditure / 1000).toFixed(2);
+
+    var expenditure = document.getElementById("expenditure");
+    var expenditureChart = new Chart(expenditure, {
+        type: 'pie',
+        data:{
+            labels:[
+                'Staff',
+                'Interior',
+                'Taxes',
+                'Loans (' + user.loansRemaining + ' remaining)',
+                'Experts'
+            ],
+            datasets:[{
+                label: '$',
+                data: [staffExpenditure.toFixed(2), interiorExpenditure.toFixed(2), taxesExpenditure, loans, expertsExpenditure],
+                backgroundColor: [backgroundColor, '#3a243b', '#280A29', '#775878', '#AEA0A7']
+            }]
+        },
+        options:{
+            title:{
+                display: true,
+                text: 'Expenditure ($1,000)'
+            }
+        }
+    });
+
+    var profits = user.profit.splice(user.profit.length - 11, 11);
+
+
+    var netWorthData = [];
+
+    if(user.netWorth.length < 12){
+        netWorthData = user.netWorth;
+        lastLabelsCut = lastLabelsCut.splice(lastLabelsCut.length - user.netWorth.length - 1, user.netWorth.length);
+    }else{
+        netWorthData = user.netWorth.splice(user.netWorth.length - 12, 12);
+    }
+
+    for (let k = 0; k < netWorthData.length; k++) {
+        netWorthData[k] = (netWorthData[k] / 1000000).toFixed(2);
+    }
+
+    var netWorth = document.getElementById("netWorth");
+    var netWorthChart = new Chart(netWorth, {
+        type: 'line',
+        data:{
+            labels: lastLabelsCut,
+            datasets:[
+                {
+                    data: netWorthData,
+                    borderColor: "#FFF",
+                    borderWidth: 1,
+                    pointRadius: 5,
+                    pointHitRadius: 15,
+                    hoverBorderWidth: 3,
+                    lineTension: 0.4,
+                    backgroundColor: backgroundColor
+                }
+            ]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Net Worth ($1,000,000)'
+            },
+            legend:{
+                display:false
+            }
+        }
+    });
+
+    var topList = document.getElementById("topCitiesList");
+    var worstList = document.getElementById("worstCitiesList");
+
+
+    user.branches.sort(function(a,b){
+        if(parseFloat(a.profit[a.profit.length - 1]) > parseFloat(b.profit[b.profit.length - 1])) return -1;
+        if(parseFloat(a.profit[a.profit.length - 1]) < parseFloat(b.profit[b.profit.length - 1])) return 1;
+        return 0;
+    });
+
+
+    var branchesCount = 4;
+    if(user.branches.length < 4){
+        branchesCount = user.branches.length;
+    }
+
+    for (let i = 0; i < branchesCount; i++) {
+        if(parseFloat(user.branches[i].profit[user.branches[i].profit.length -1]) > 0){
+            var tr = document.createElement('tr');
+
+            var tdNumber = document.createElement('td');
+            tdNumber.innerText = i + 1;
+            tr.appendChild(tdNumber);
+
+            var tdCity = document.createElement('th');
+            var a = document.createElement('a');
+            if(!user.branches[i].onSale){
+                a.href = '/branches/' + user.branches[i]._id;
+            }
+            a.innerText = user.branches[i].city;
+            tdCity.appendChild(a);
+            tr.appendChild(tdCity);
+
+            var tdProfit = document.createElement('td');
+            tdProfit.innerText = formatter.format(user.branches[i].profit[user.branches[i].profit.length - 1]); //Grab last element
+            tdProfit.classList.add("cashTable");
+            tr.appendChild(tdProfit);
+
+            topList.appendChild(tr);
+        }
+    }
+
+
+
+    user.branches.sort(function(a,b){
+        if(parseFloat(a.profit[a.profit.length - 1]) > parseFloat(b.profit[b.profit.length - 1])) return 1;
+        if(parseFloat(a.profit[a.profit.length - 1]) < parseFloat(b.profit[b.profit.length - 1])) return -1;
+        return 0;
+    });
+
+    for (let i = 0; i < branchesCount; i++) {
+        if(parseFloat(user.branches[i].profit[user.branches[i].profit.length -1]) < 0){
+            var tr = document.createElement('tr');
+            var tdNumber = document.createElement('td');
+            tdNumber.innerText = i + 1;
+            tr.appendChild(tdNumber);
+
+            var tdCity = document.createElement('th');
+            var a = document.createElement('a');
+            if(!user.branches[i].onSale){
+                a.href = '/branches/' + user.branches[i]._id;
+            }
+            a.innerText = user.branches[i].city;
+            tdCity.appendChild(a);
+            tr.appendChild(tdCity);
+
+            var tdProfit = document.createElement('td');
+            tdProfit.innerText = formatter.format(Math.abs(parseFloat(user.branches[i].profit[user.branches[i].profit.length - 1]))); //Grab last element
+            tdProfit.classList.add("cashTable");
+            tr.appendChild(tdProfit);
+
+            worstList.appendChild(tr);
+        }
+    }
+
+    var locations = <%-locations%>
+
+    var mapData = [];
+    var maxBeds = 0;
+    beds.forEach(bed => {
+        if(bed > maxBeds){
+            maxBeds = bed;
+        }
+    });
+
+    var cityProfits = [];
+
+    user.branches.forEach(branch => {
+        var item = {};
+        item.city = branch.city;
+        item.profit = branch.profit[branch.profit.length - 1];
+        item.beds = branch.beds;
+        cityProfits.push(item);
+    });
+
+    //-------------------
+    //MAP
+    //-------------------
+
+    for (let i = 0; i < beds.length; i++) {
+        var bubble = {};
+        bubble.city = cities[i];
+        bubble.radius = beds[i] / maxBeds * 20;
+        bubble.beds = beds[i];
+
+        var currentBranch = user.branches.find(function(a){
+            return a.city == cities[i];
+        });
+        bubble.profitNum = currentBranch.profit[currentBranch.profit.length - 1];
+        isNaN(bubble.profitNum) ? bubble.profit = ' - ' : bubble.profit = formatter.format(bubble.profitNum);
+
+        var currentLocation = locations.find(function(a){
+            return a.city == cities[i];
+        });
+        bubble.latitude = currentLocation.latitude;
+        bubble.longitude = currentLocation.longitude;
+        bubble.visitors = currentLocation.visitors.toFixed();
+        bubble._id = currentLocation._id;
+        if(currentLocation.beds > currentLocation.visitors * 1.5){
+            bubble.fillKey = 'full';
+        }else if(currentLocation.beds > currentLocation.visitors){
+            bubble.fillKey = 'semi';
+        }else{
+            bubble.fillKey = 'free';
+        }
+        mapData.push(bubble);
+    }
+
+    var profitMapButton = document.getElementById('profitMapButton');
+    var bedsMapButton = document.getElementById('bedsMapButton');
+    var infoMap = document.getElementById('infoMap');
+    
+
+    var map = new Datamap({
+        element: document.getElementById('map'),
+        geographyConfig: {
+            popupOnHover: false,
+            highlightOnHover: false
+        },
+        bubblesConfig: {
+            highlightFillColor: '#FFFFFF',
+        },
+        fills: {
+            defaultFill: '#3a243b',
+            full: '#FF0000',
+            semi: '#FFFF00',
+            free: '#00FF00'
+        }
+    });
+    map.bubbles(
+        mapData,
+        {
+            popupTemplate: function(geo, data){
+                return '<div class ="hoverinfo"><b>' + data.city + ' </b> <br>Your beds: ' + data.beds + '<br>Visitors index: ' + data.visitors + '<br>Profit: ' + data.profit + '</div>';
+            }
+    });
+    d3.selectAll('.datamaps-bubble').on('click', function(bubble){
+        window.open('/locations/' + bubble._id, "_self");
+    });
+
+    profitMapButton.addEventListener('click', function(){
+        infoMap.setAttribute('data-content', 'Hover over your branches. The bigger the circle, the more profit');
+        var maxProfit = 0;
+
+        mapData.forEach(bubble => {
+            if(bubble.profitNum > maxProfit) maxProfit = bubble.profitNum;
+        });
+
+        mapData.forEach(bubble => {
+            var currentBranch = cityProfits.find(function(a){
+                return a.city == bubble.city;
+            });
+            if(!isNaN(currentBranch.profit)){
+                bubble.radius = currentBranch.profit / maxProfit * 20;
+            }else{
+                bubble.radius = 1;
+            }
+            bubble.radius = bubble.radius < 3 ? bubble.radius = 3 : bubble.radius;
+        });
+        map.bubbles(
+        mapData,
+        {
+            popupTemplate: function(geo, data){
+                return '<div class ="hoverinfo"><b>' + data.city + ' </b> <br>Your beds: ' + data.beds + '<br>Visitors index: ' + data.visitors + '<br>Profit: ' + data.profit + '</div>';
+            }
+        });
+    });
+
+    bedsMapButton.addEventListener('click', function(){
+        infoMap.setAttribute('data-content', 'Hover over your branches. The bigger the circle, the more beds');
+        var maxBeds = 0;
+
+        mapData.forEach(bubble => {
+            if(bubble.beds > maxBeds) maxBeds = bubble.beds;
+        });
+
+        mapData.forEach(bubble => {
+            var currentBranch = cityProfits.find(function(a){
+                return a.city == bubble.city;
+            });
+            if(!isNaN(currentBranch.beds)){
+                bubble.radius = currentBranch.beds / maxBeds * 20;
+            }else{
+                bubble.radius = 3;
+            }
+            bubble.radius = bubble.radius < 3 ? bubble.radius = 3 : bubble.radius;
+        });
+    map.bubbles(
+        mapData,
+        {
+            popupTemplate: function(geo, data){
+                return '<div class ="hoverinfo"><b>' + data.city + ' </b> <br>Your beds: ' + data.beds + '<br>Visitors index: ' + data.visitors + '<br>Profit: ' + data.profit + '</div>';
+            }
+        });
+    });
+
+
+    cash.innerText = formatter.format(user.cash);
+
+    var log10 = Math.log(10);
+    function getSignificantDigitCount(n) {
+        if(n.includes(".")){
+            return n.indexOf(".");
+        }else{
+            return n.length;
+        }
+    }
+    </script>
+<%- include("../partials/footer") %>

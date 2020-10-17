@@ -1,0 +1,16 @@
+<%- include("./partials/header") %>
+
+<div class="container">
+    <form class="form" id="forgot" action="/reset/<%=token%>" method="POST">
+        <h1 class="text-center">Reset Password</h1>
+        <div class="form-group">
+            <input class="form-control" type="password" name="password" id="forgot" placeholder="New password" required minlength="6">
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="password" name="confirm" id="forgot" placeholder="Confirm password" required minlength="6">
+        </div>
+        <button type="submit" class="d-none d-md-block btn btn-block btn-outline-light">Update Password</button>
+        <button type="submit" class="d-md-none btn btn-block btn-outline-dark">Update Password</button>
+    </form>
+</div>
+<%- include("./partials/footer") %>

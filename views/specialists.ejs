@@ -1,0 +1,96 @@
+<%- include("./partials/header") %>
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-2">Specialists</h1>
+        <h5 class="text-muted"> - <%= currentUser.chainName %> -</h5>
+
+        <hr>
+        <i data-toggle='popover' data-trigger='hover focus' data-content="See your specialists. Fire them here if you don't need them anymore." class="text-center material-icons" id="info">info</i>
+
+        <table class="table table-striped branches-table">
+            <thead>
+                <tr>
+                    <th scope="col">Expert</th>
+                    <th scope="col" class="cashTable">Cost</th>
+                    <th scope="col">Description</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<script>
+    var nav = document.getElementById("specialistsNav");
+    nav.classList.add("active");
+
+    var table = $('#tableBody');
+
+    var user = <%- currentUserJSON %>;
+
+    if(user.accountant){
+        AddToTable("Accountant", "$14,000", "<ul> <li> About 10% lower taxes </li> <li> I can give you a deeper insight into your finances </li>", true)
+    }
+    if(user.banker){
+        AddToTable("Banker", "$11,000", "<ul> <li>Take loans</li> <li>Get access to banking </li>", true);
+    }
+    if(user.salesperson){
+        AddToTable("Salesperson", "$45,000", "<ul> <li>I manage marketing and advertising for all your branches!</li> <li>Increase the occupancy</li>", true);
+    }
+
+    function AddToTable(name, cost, description, fireable){
+        var tr = document.createElement('tr');
+        var thName = document.createElement('th');
+        thName.innerText = name;
+        tr.append(thName);
+
+        var tdCost = document.createElement('td');
+        tdCost.innerText = cost;
+        tdCost.classList.add('cashTable');
+        tr.append(tdCost);
+
+        var tdDescription = document.createElement('td');
+        tdDescription.innerHTML = description
+        tr.append(tdDescription);
+        
+        if(fireable){
+            var tdButton = document.createElement('td');
+            var form = document.createElement('form');
+            form.action = '/fire';
+            form.method = 'POST';
+            var input = document.createElement('input');
+            input.setAttribute('hidden', '');
+            input.name = 'item';
+            input.value = name.toLowerCase();
+
+            var button = document.createElement('button');
+            button.classList.add('btn');
+            button.type = 'submit';
+            button.innerText = "Fire"
+
+            if(user.dark) button.classList.add('btn-outline-light');
+            else button.classList.add('btn-outline-dark');
+
+            form.appendChild(input);
+            form.appendChild(button);
+            tdButton.append(form);
+            tr.append(tdButton);
+        }else{
+            tr.append(document.createElement('td'));
+        }
+
+
+        table.append(tr);
+    }
+
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    });
+</script>
+
+
+<%- include("./partials/footer") %>

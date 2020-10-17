@@ -1,0 +1,50 @@
+<%- include("./partials/header") %>
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-2">Polypol Bank</h1>
+        <h5 class="text-muted"> - <%= currentUser.chainName %> -</h5>
+        <hr>
+        <p class="d-xxl-none text-muted"><%=cash%></p>
+        <br>
+        <div class="d-flex justify-content-around">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Small loan</h5>
+                    <p class="card-text">Take out a small loan! You pay <%= loanvalue[2] %> for 36 months. This corresponds to an interest rate of 10%, with larger loans you pay a significantly lower interest rate.</p>
+                    <form action="/bank/take/0" method="post">
+                        <button type="submit" class="btn btn-primary" <% if(currentUser.loansRemaining > 0){%> disabled <%}%></button>Take <%=loans[2]%></button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Normal loan</h5>
+                    <p class="card-text">Take out a normal loan! You pay <%= loanvalue[1] %> for 48 months. This corresponds to an interest rate of 7%, with larger loans you pay a significantly lower interest rate.</p>
+                    <form action="/bank/take/1" method="post">
+                        <button type="submit" class="btn btn-primary" <% if(currentUser.loansRemaining > 0){%> disabled <%}%></button>Take <%=loans[1]%></button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Big investment</h5>
+                    <p class="card-text">Make a huge investment now! You pay <%= loanvalue[0] %> for 60 months. This corresponds to an interest rate of 4%, the best Polypol bank can offer you.</p>                    
+                    <form action="/bank/take/2" method="post">
+                        <button type="submit" class="btn btn-primary" <% if(currentUser.loansRemaining > 0){%> disabled <%}%></button>Take <%=loans[0]%></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    var nav = document.getElementById("bankNav");
+    nav.classList.add("active");
+
+
+</script>
+<%- include("./partials/footer") %>
